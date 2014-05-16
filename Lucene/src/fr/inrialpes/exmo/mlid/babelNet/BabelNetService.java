@@ -1,5 +1,9 @@
 package fr.inrialpes.exmo.mlid.babelNet;
 
+import it.uniroma1.lcl.babelnet.BabelNet;
+import it.uniroma1.lcl.babelnet.BabelSynset;
+import it.uniroma1.lcl.jlt.util.Language;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,15 +16,118 @@ import java.util.StringTokenizer;
 
 public class BabelNetService {
 
+	/**
+	 * @deprecated
+	 */
 	private static String urlApi = "http://babelnet.org/search.jsp";
 
+	/**
+	 * @deprecated
+	 */
 	private static String identifier = "bn:";
 
+	/**
+	 * @deprecated
+	 */
 	private static String noResult = "No result found";
-	
+
+	/**
+	 * @deprecated
+	 */
 	private static String limitRequest = "Too many requests";
 
+	/**
+	 * Méthode qui retourne la liste d'id babelnet du mot entré en paramètre
+	 * 
+	 * @param word
+	 *            mot dont on veut la liste d'id babelnet
+	 * @param lang
+	 *            langue du mot
+	 * @return liste d'id babelnet
+	 */
 	public static List<String> getListId(String word, String lang) {
+
+		BabelNet bn = BabelNet.getInstance();
+
+		try {
+			List<String> listId = new ArrayList<String>();
+			Language langage = null;
+			if (lang.equalsIgnoreCase("fr")) {
+				langage = Language.FR;
+			} else if (lang.equalsIgnoreCase("en")) {
+				langage = Language.EN;
+
+			} else if (lang.equalsIgnoreCase("ch")) {
+				langage = Language.ZH;
+			} else if (lang.equalsIgnoreCase("ru")) {
+				langage = Language.RU;
+			} else {
+				System.out.println("Langue non reconnue");
+				return null;
+			}
+			List<BabelSynset> synsets = bn.getSynsets(langage, word);
+			for (BabelSynset synset : synsets) {
+				listId.add(synset.getId());
+				// System.out.println(synset.getId());
+			}
+			return listId;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Méthode qui retourne le premier id babelnet du mot entré en paramètre
+	 * 
+	 * @param word
+	 *            mot dont on veut la l'id babelnet
+	 * @param lang
+	 *            langue du mot
+	 * @return
+	 */
+	public static String getId(String word, String lang) {
+		List<String> tempList = getListId(word, lang);
+		// return tempList.get(0);
+		if (tempList.isEmpty()) {
+			// System.out.println("liste vide");
+			return noResult;
+		} else
+			return tempList.get(0);
+	}
+
+	/**
+	 * Méthode qui pour une liste de terme donnée, retourne la liste d'ID
+	 * babelnet correspondant
+	 * 
+	 * @param listTerm
+	 *            liste des termes dont on veut l'id babelnet
+	 * @param lang
+	 *            langue de la liste de terme
+	 * @return
+	 */
+	public static List<String> getListBabelNetId(List<String> listTerm,
+			String lang) {
+		List<String> listBabelNet = new ArrayList<>();
+		for (String term : listTerm) {
+			String tempId = BabelNetService.getId(term, lang);
+			listBabelNet.add(tempId);
+		}
+		return listBabelNet;
+	}
+
+	/**
+	 * Méthode qui retourne la liste d'id babelnet du mot entré en paramètre à
+	 * partir de l'API web
+	 * 
+	 * @deprecated
+	 * @param word
+	 *            mot dont on veut la liste d'id babelnet
+	 * @param lang
+	 *            langue du mot
+	 * @return liste d'id babelnet
+	 */
+	public static List<String> getListIdWebAPI(String word, String lang) {
 		String request = urlApi + "?word=" + word + "&lang=" + lang;
 		// System.out.println(request);
 		try {
@@ -55,9 +162,10 @@ public class BabelNetService {
 					listId.add(noResult);
 					break;
 				}
-				if(ligne.contains(limitRequest)){
+				if (ligne.contains(limitRequest)) {
 					listId.add(noResult);
-					System.out.println("Nombre limite de requête atteiente. API non utilisable jusqu'à demain!");
+					System.out
+							.println("Nombre limite de requête atteiente. API non utilisable jusqu'à demain!");
 				}
 			}
 			return listId;
@@ -72,27 +180,12 @@ public class BabelNetService {
 	}
 
 	/**
-	 * Méthode qui retourne le premier id babelnet du mot entré en paramètre
-	 * 
-	 * @param word
-	 * @param lang
-	 * @return
-	 */
-	public static String getId(String word, String lang) {
-		List<String> tempList = getListId(word, lang);
-		// return tempList.get(0);
-		if (tempList.isEmpty()) {
-			// System.out.println("liste vide");
-			return noResult;
-		} else
-			return tempList.get(0);
-	}
-
-	/**
 	 * Méthode qui filtre les id obtenu afin de les rendre utilisables
 	 * 
+	 * @deprecated
 	 * @param idToFilter
-	 * @return
+	 *            id à filtrer
+	 * @return id filtrer
 	 */
 	private static String filterId(String idToFilter) {
 		String temp1 = idToFilter.replace("\">[explore]</a>", "");
@@ -100,21 +193,4 @@ public class BabelNetService {
 		return temp2;
 	}
 
-	/**
-	 * Méthode qui pour une liste de terme donnée, retourne la liste d'ID
-	 * babelnet correspondant
-	 * 
-	 * @param listTerm
-	 * @param lang
-	 * @return
-	 */
-	public static List<String> getListBabelNetId(List<String> listTerm,
-			String lang) {
-		List<String> listBabelNet = new ArrayList<>();
-		for (String term : listTerm) {
-			String tempId = BabelNetService.getId(term, lang);
-			listBabelNet.add(tempId);
-		}
-		return listBabelNet;
-	}
 }
