@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/Giovanni/Downloads/lucene-4.6.1/lucene-4.6.1/analysis/common/lucene-analyzers-common-4.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="E:/Programmes/Program Files (x86)/BabelNet/babelnet-api-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Giovanni/Desktop/ontosim-vector-model.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
