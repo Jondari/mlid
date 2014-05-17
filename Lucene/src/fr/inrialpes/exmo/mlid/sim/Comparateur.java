@@ -13,6 +13,11 @@ public class Comparateur {
 	 */
 	public List<List<String>> listOfList = null;
 
+	/**
+	 * 
+	 * @param list
+	 *            liste des listes à comparer
+	 */
 	public Comparateur(List<List<String>> list) {
 		listOfList = list;
 		/* on supprime les doublons de la liste */
@@ -25,7 +30,8 @@ public class Comparateur {
 	 * Méthode qui supprime les doublon d'une liste
 	 * 
 	 * @param listWithDuplicate
-	 * @return
+	 *            liste dont on souhaite éliminer les doublons
+	 * @return liste sans doublons
 	 */
 	public static List<String> removeDuplicate(List<String> listWithDuplicate) {
 		// Créer une liste de contenu unique basée sur les éléments de ArrayList
@@ -41,7 +47,7 @@ public class Comparateur {
 	 * 
 	 * @param list1
 	 * @param list2
-	 * @return
+	 * @return nombre de terme commun au deux listes
 	 */
 	public static int getNbCommonTerm0(List<String> list1, List<String> list2) {
 		int i = 0;
@@ -50,56 +56,93 @@ public class Comparateur {
 				if (crtTerm1.equals(crtTerm2)) {
 					i++;
 				}
-				
 			}
 		}
 		return i;
 	}
 
+	/**
+	 * Méthode qui retourne le nombre de terme en commun entre 2 listes
+	 * 
+	 * @param list1
+	 * @param list2
+	 * @return nombre de terme commun au deux listes
+	 */
 	public static int getNbCommonTerm(List<String> list1, List<String> list2) {
 		int sizeList1 = list1.size();
 		int sizeList2 = list2.size();
 		int nbTerm = 0;
-		// si la liste 1 est plus grande que la liste 2 on enlève les éléments de la liste 2 à la liste 1
+		// si la liste 1 est plus grande que la liste 2 on enlève les éléments
+		// de la liste 2 à la liste 1
 		if (sizeList1 >= sizeList2) {
 			List<String> list3 = new ArrayList<>(list1);
-			//System.out.println("Liste 3 initial");
-			//System.out.println(list3.toString());
+			// System.out.println("Liste 3 initial");
+			// System.out.println(list3.toString());
 			boolean change = list3.removeAll(list2);
 			int sizeList3 = list3.size();
-			/*if (change) {
-				System.out.println("il y a eu du changement");
-				System.out.println(list3.toString());
-			}*/
+			/*
+			 * if (change) { System.out.println("il y a eu du changement");
+			 * System.out.println(list3.toString()); }
+			 */
 			nbTerm = sizeList1 - sizeList3;
 		}
-		// si la liste 2 est plus grande que la liste 1 on enlève les éléments de la liste 1 à la liste 2
+		// si la liste 2 est plus grande que la liste 1 on enlève les éléments
+		// de la liste 1 à la liste 2
 		else if (sizeList1 <= sizeList2) {
 			List<String> list3 = new ArrayList<>(list2);
-			//System.out.println("Liste 3 initial");
-			//System.out.println(list3.toString());
+			// System.out.println("Liste 3 initial");
+			// System.out.println(list3.toString());
 			boolean change = list3.removeAll(list1);
 			int sizeList3 = list3.size();
-			/*if (change) {
-				System.out.println("il y a eu du changement");
-				System.out.println(list3.toString());
-			}*/
+			/*
+			 * if (change) { System.out.println("il y a eu du changement");
+			 * System.out.println(list3.toString()); }
+			 */
 			nbTerm = sizeList2 - sizeList3;
 		}
 		return nbTerm;
 	}
-	
+
 	/**
-	 * Méthode qui écrit dans un fichier le nombre de terme que 2 fichier ont en
-	 * commun
+	 * Méthode qui écrit dans le fichier src/rapport/rapport.txt le nombre de
+	 * terme que 2 fichier ont en commun
+	 * 
+	 * @param nameList1
+	 *            nom du fichier 1
+	 * @param nameList2
+	 *            nom du fichier 2
+	 * @param nbTerm
+	 *            terme communs au deux fichiers
 	 */
 	public static void reportNbCommonTerm(String nameList1, String nameList2,
 			int nbTerm) {
 		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
 				+ " ont " + nbTerm + " termes en commun.";
 		System.out.println(phrase);
-		FileUtil.writeText("./src/rapport.txt", phrase, true);
-		FileUtil.writeText("./src/rapport.txt", "\n\r", true);
+		FileUtil.writeText("./src/rapport/rapport.txt", phrase, true);
+		FileUtil.writeText("./src/rapport/rapport.txt", "\r", true);
+	}
+
+	/**
+	 * Méthode qui écrit dans un fichier entré en paramètre le nombre de terme
+	 * que 2 fichier ont en commun
+	 * 
+	 * @param nameList1
+	 *            nom du fichier 1
+	 * @param nameList2
+	 *            nom du fichier 2
+	 * @param nbTerm
+	 *            terme communs au deux fichiers
+	 * @param reportPath
+	 *            chemin vers le ficher rapport
+	 */
+	public static void reportNbCommonTerm(String nameList1, String nameList2,
+			int nbTerm, String reportPath) {
+		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
+				+ " ont " + nbTerm + " termes en commun.";
+		System.out.println(phrase);
+		FileUtil.writeText(reportPath, phrase, true);
+		FileUtil.writeText(reportPath, "\r", true);
 	}
 
 	/**
