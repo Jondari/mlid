@@ -1,5 +1,6 @@
 package fr.inrialpes.exmo.mlid.sim;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -119,6 +120,10 @@ public class Comparateur {
 		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
 				+ " ont " + nbTerm + " termes en commun.";
 		System.out.println(phrase);
+		File rapport = new File("./src/rapport/");
+		if (!rapport.exists()) {
+			rapport.mkdir();
+		}
 		FileUtil.writeText("./src/rapport/rapport.txt", phrase, true);
 		FileUtil.writeText("./src/rapport/rapport.txt", "\r", true);
 	}
