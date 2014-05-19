@@ -1,6 +1,15 @@
 package fr.inrialpes.exmo.mlid;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import fr.inrialpes.exmo.mlid.preprocess.Tokenization;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
@@ -13,40 +22,64 @@ import fr.inrialpes.exmo.ontosim.vector.model.DocumentCollection;
 public class ComputeSim {
 
 	public static void main(String[] args) {
+
+		Options option = new Options();
+
 		// dossier contenant les fichiers babelnet d'une langue
-		String d1;
+		Option d1 = new Option("d1", true,
+				"dossier contenant les fichiers babelnet d'une langue");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		d1.setRequired(true);
+		String d1S = null;
 
 		// dossier contenant les fichiers babelnet d'une autre langue
-		String d2;
+		Option d2 = new Option("d2", true,
+				"dossier contenant les fichiers babelnet d'une autre langue");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		d2.setRequired(true);
+		String d2S = null;
 
 		// Type de vecteur à utiliser
 		// TF ou TFIDF
-		String vectorType = "TFIDF";
+		Option vectorType = new Option("vectorType", true,
+				"Type de vecteur à utiliser : TF ou TFIDF");
+		String vectorTypeS = "TFIDF";
 
 		// Mesure à utiliser
 		// Cos pour Cosine
 		// Jacc pour Jaccard
-		String mesure = "Cos";
+		Option mesure = new Option("mesure", true,
+				"Mesure à utiliser : Cos pour Cosine ou Jacc pour Jaccard");
+		String mesureS = "Cos";
+		option.addOption(d1);
+		option.addOption(d2);
+		option.addOption(vectorType);
+		option.addOption(mesure);
 
 		if (args.length == 0) {
 			System.out
 					.println("Pas d'argument! Modifié les paramètres manuellement.");
-			d1 = "C:/Users/Giovanni/Desktop/File/Fr/mod/";
-			d2 = "C:/Users/Giovanni/Desktop/File/En/mod/";
+			d1S = "C:/Users/Giovanni/Desktop/File/Fr/mod/";
+			d2S = "C:/Users/Giovanni/Desktop/File/En/mod/";
 		}
 		// sinon on effecture directement le traitement des données.
-		// args[0] correspond au dossier source 1
-		// args[1] correspond au dossier source 2
-		// args[2] correspond au type de vecteur à utiliser
-		// args[3] correspond à la mesure à utiliser
 		else {
-			d1 = args[0];
-			d2 = args[1];
-			if (args.length == 3) {
-				vectorType = args[2];
-			}
-			if (args.length == 4) {
-				mesure = args[3];
+			CommandLineParser parser = new GnuParser();
+			try {
+				CommandLine cmd = parser.parse(option, args);
+
+				d1S = cmd.getOptionValue("d1");
+				d2S = cmd.getOptionValue("d2");
+				if (cmd.hasOption("vectorType")) {
+					vectorTypeS = cmd.getOptionValue("vectorType");
+				}
+				if (cmd.hasOption("mesure")) {
+					mesureS = cmd.getOptionValue("mesure");
+				}
+			} catch (ParseException e) {
+				// Affichage de l'aide
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp("ComputeSim", option);
 			}
 		}
 
@@ -55,34 +88,34 @@ public class ComputeSim {
 		System.out.println("les termes sont " + docCollection.getTerms());
 
 		// liste des documents du dossier 1
-		List<Document> docList1 = fillDocCollection(d1, docCollection);
+		List<Document> docList1 = fillDocCollection(d1S, docCollection);
 
 		// liste des documents du dossier 2
-		List<Document> docList2 = fillDocCollection(d2, docCollection);
+		List<Document> docList2 = fillDocCollection(d2S, docCollection);
 		System.out.println("les termes sont " + docCollection.getTerms());
 
 		// liste des vecteurs des documents du dossier 1
-		List<double[]> listVect1 = getListVector(vectorType, docList1,
+		List<double[]> listVect1 = getListVector(vectorTypeS, docList1,
 				docCollection);
 
 		// liste des vecteurs des documents du dossier 2
-		List<double[]> listVect2 = getListVector(vectorType, docList2,
+		List<double[]> listVect2 = getListVector(vectorTypeS, docList2,
 				docCollection);
 
 		// création de la matrice et écriture dans un fichier
-		String toWrite = getName(d1);
-		List<String> nameDoc2 = FileUtil.getListNameFile(d2);
+		String toWrite = getName(d1S);
+		List<String> nameDoc2 = FileUtil.getListNameFile(d2S);
 		int i = 0;
 		// on récupère les noms des doc1 du dossier 1 et on les écrit dans le
 		// fichier csv
-		FileUtil.writeText(d1 + "matrice.csv", toWrite, true);
+		FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
 		for (double[] vector1 : listVect1) {
 			toWrite = "";
 			for (double[] vector2 : listVect2) {
 				VectorMeasure sim = null;
-				if (mesure.equalsIgnoreCase("Cos")) {
+				if (mesureS.equalsIgnoreCase("Cos")) {
 					sim = new CosineVM();
-				} else if (mesure.equalsIgnoreCase("Jacc")) {
+				} else if (mesureS.equalsIgnoreCase("Jacc")) {
 					sim = new JaccardVM();
 				} else {
 					System.out.println("La mesure utilisé est incorrect");
@@ -91,11 +124,12 @@ public class ComputeSim {
 				toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
 			}
 			// on écrit le nom du document courant du dossier
-			FileUtil.writeText(d1 + "matrice.csv", "\n" + nameDoc2.get(i)
+			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
 					+ "; ", true);
 			// on écrit la ligne de matrice
-			FileUtil.writeText(d1 + "matrice.csv", toWrite + "\n", true);
+			FileUtil.writeText(d1S + "/matrice.csv", toWrite + "\n", true);
 			i++;
+
 		}
 	}
 
