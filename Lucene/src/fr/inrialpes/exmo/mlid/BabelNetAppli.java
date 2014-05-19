@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -33,7 +34,7 @@ public class BabelNetAppli {
 		pathDest.setRequired(true);
 
 		/** langue du fichier à traiter */
-		Option lang = new Option("lang", true, "langue des fichiers du dossier");
+		Option lang = new Option("lang", true, "langue du fichier à traiter");
 
 		// ajout des options définies
 		option.addOption(pathFile);
@@ -49,9 +50,6 @@ public class BabelNetAppli {
 					.println("Pas d'argument! Veuillez entrer des arguments!");
 		}
 		// sinon on effecture directement le traitement des données.
-		// args[0] correspond au fichier source
-		// args[1] correspond au fichier destination
-		// args[2] correspond à la langue du fichier
 		else {
 			CommandLineParser parser = new GnuParser();
 			try {
@@ -101,6 +99,8 @@ public class BabelNetAppli {
 				FileUtil.writeText(pathDestS, idText, true);
 			} catch (ParseException e) {
 				// Affichage de l'aide
+				HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("BalbelnetAppli", option);
 			}
 		}
 	}
