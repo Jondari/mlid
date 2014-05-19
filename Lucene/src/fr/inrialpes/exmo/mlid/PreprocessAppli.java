@@ -2,6 +2,14 @@ package fr.inrialpes.exmo.mlid;
 
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import fr.inrialpes.exmo.mlid.preprocess.LowerCase;
 import fr.inrialpes.exmo.mlid.preprocess.NGrams;
 import fr.inrialpes.exmo.mlid.preprocess.PreprocessFilter;
@@ -14,20 +22,11 @@ import fr.inrialpes.exmo.mlid.util.FileUtil;
  * Classe permettant d'appliquer un ou plusieurs filtres à un document entré en
  * paramètre et d'obtenir le fichier résultat en spécifiant son chemin d'accès.
  * Il est nécessaire de spécifier la langue du document. Les langues reconnus
- * sont le français, l'anglais le russe et le chinois. 
- * Pour spécifier la langue entré fr, en, ru ou ch. 
- * Pour spécifier le filtre entré : 
- * - Stop pour le StopWord 
- * - Stem pour le Stemming
- * - Token pour la Tokenization 
- * - Low pour le LowerCase 
- * - NGr pour le NGrams 
- * - Low+Token 
- * - Low+Stop 
- * - Low+Stop+Token 
- * - Low+Stop+Stem 
- * - Low+Stop+Stem+Token 
- * - Low+Stop+Stem+NGr
+ * sont le français, l'anglais le russe et le chinois. Pour spécifier la langue
+ * entré fr, en, ru ou ch. Pour spécifier le filtre entré : - Stop pour le
+ * StopWord - Stem pour le Stemming - Token pour la Tokenization - Low pour le
+ * LowerCase - NGr pour le NGrams - Low+Token - Low+Stop - Low+Stop+Token -
+ * Low+Stop+Stem - Low+Stop+Stem+Token - Low+Stop+Stem+NGr
  * 
  * @author Giovanni
  * 
@@ -38,20 +37,45 @@ public class PreprocessAppli {
 		// si on a pas précisé d'argument au lancement de l'application
 		// on effectue les modification manuellement
 
+		Options option = new Options();
+
 		// dossier des fichiers à traiter
-		String dirPath;
+		String dirPath = null;
+		Option d1 = new Option("d1", true,
+				"dossier contenant les fichiers à traiter");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		d1.setRequired(true);
 
 		// dossier contenant les fichiers résultats
-		String dirPathDest;
+		String dirPathDest = null;
+		Option d2 = new Option("d2", true,
+				"dossier contenant les fichiers une fois traitées");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		d2.setRequired(true);
 
 		// filtre à appliquer
-		String cmd;
+		String cmd = null;
+		Option filtre = new Option("filtre", true,
+				"Filtre à appliquer aux textes");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		filtre.setRequired(true);
 
 		// langue du fichier
-		String lang;
+		String lang = null;
+		Option langue = new Option("lang", true,
+				"langue des fichiers du dossier");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		filtre.setRequired(true);
 
 		// la taille des grammes
 		int n = 3;
+		Option taille = new Option("taille", true, "Taille des grammes");
+
+		option.addOption(d1);
+		option.addOption(d2);
+		option.addOption(langue);
+		option.addOption(filtre);
+		option.addOption(taille);
 
 		PreprocessFilter filter = null;
 
@@ -64,19 +88,22 @@ public class PreprocessAppli {
 			lang = "en";
 		}
 		// sinon on effecture directement le traitement des données.
-		// args[0] correspond au dossier source
-		// args[1] correspond au dossier destination
-		// args[2] correspond au filtre à appliquer sur les fichiers
-		// args[3] correspond à la langue du fichier
-		// args[4] correspond à la taille du gramme
 		else {
-			System.out.println("traitement en mode console");
-			dirPath = args[0];
-			dirPathDest = args[1];
-			cmd = args[2];
-			lang = args[3];
-			if (args.length == 5) {
-				n = Integer.parseInt(args[4]);
+			CommandLineParser parser = new GnuParser();
+			try {
+				CommandLine cmds = parser.parse(option, args);
+				System.out.println("traitement en mode console");
+				dirPath = cmds.getOptionValue("d1");
+				dirPathDest = cmds.getOptionValue("d2");
+				cmd = cmds.getOptionValue("filtre");
+				lang = cmds.getOptionValue("lang");
+				if (cmds.hasOption("taille")) {
+					n = Integer.parseInt(cmds.getOptionValue("taille"));
+				}
+			} catch (ParseException e) {
+				// Affichage de l'aide
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp("PreprocessAppli", option);
 			}
 		}
 
@@ -127,6 +154,10 @@ public class PreprocessAppli {
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+NGr")) {
 				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
 						tmpText), lang), lang), n);
+			} else {
+				System.out
+						.println("Commande non reconnue! Arret du programme!");
+				System.exit(-1);
 			}
 
 			// On écrit la nouvelle chaîne de caractère dans le fichier
@@ -136,7 +167,7 @@ public class PreprocessAppli {
 					FileUtil.writeText(fileDestTemp, filter.getList(), true);
 				}
 				if (cmd.contains("NGr")) {
-					FileUtil.writeText(dirPathDest,
+					FileUtil.writeText(fileDestTemp,
 							((NGrams) filter).getCrtList(), true);
 				}
 			} else {
