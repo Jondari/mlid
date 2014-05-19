@@ -1,7 +1,13 @@
 package fr.inrialpes.exmo.mlid;
 
-
 import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import fr.inrialpes.exmo.mlid.babelNet.BabelNetService;
 import fr.inrialpes.exmo.mlid.preprocess.LowerCase;
@@ -13,18 +19,30 @@ public class BabelNetAppli {
 
 	public static void main(String[] args) {
 
-		// fichier à traiter
-		String pathFile;
+		/** Classe qui regroupe toute les options définies */
+		Options option = new Options();
 
-		// fichier résultat
-		String pathDest;
+		/** fichier à traiter */
+		Option pathFile = new Option("f1", true, "fichier source");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		pathFile.setRequired(true);
 
-		String pathDirectoryReport = null;
+		/** fichier résultat */
+		Option pathDest = new Option("f2", true, "fichier résultat");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		pathDest.setRequired(true);
 
-		// langue du fichier
-		String lang;
+		/** langue du fichier à traiter */
+		Option lang = new Option("lang", true, "langue des fichiers du dossier");
+
+		// ajout des options définies
+		option.addOption(pathFile);
+		option.addOption(pathDest);
+		option.addOption(lang);
 
 		String noResult = "No result found";
+
+		String pathDirectoryReport = null;
 
 		if (args.length == 0) {
 			System.out
@@ -35,40 +53,55 @@ public class BabelNetAppli {
 		// args[1] correspond au fichier destination
 		// args[2] correspond à la langue du fichier
 		else {
-			pathFile = args[0];
-			pathDest = args[1];
-			lang = args[2];
-			pathDirectoryReport = pathDest.substring(0,
-					pathDest.lastIndexOf("/"))
-					+ "/report.txt";
+			CommandLineParser parser = new GnuParser();
+			try {
 
-			// on récupère la chaine de caractère */
-			String text = FileUtil.getText(pathFile);
-			System.out.println(text);
+				CommandLine cmd = parser.parse(option, args);
 
-			// on traite la chaine de charactère
-			List<String> listTerm = new StopWord(new LowerCase(text), lang)
-					.getList();
-			System.out.println(listTerm.toString());
-			// System.out.println(listTerm.toString());
-			listTerm = Comparateur.removeDuplicate(listTerm);
-			System.out.println(listTerm.toString());
-			// System.out.println("*** Après suppression doublon ***");
-			// System.out.println(listTerm.toString());
-			// récupère la liste d'id babelnet
-			List<String> idText = BabelNetService.getListBabelNetId(listTerm,
-					lang);
-			System.out.println(idText.toString());
+				String pathFileS = cmd.getOptionValue("f1");
+				String pathDestS = cmd.getOptionValue("f2");
+				String langS = cmd.getOptionValue("lang");
+				if (pathDestS.contains("/")) {
+					pathDirectoryReport = pathDestS.substring(0,
+							pathDestS.lastIndexOf("/"))
+							+ "/report.txt";
+				} else {
+					pathDirectoryReport = pathDestS.substring(0,
+							pathDestS.lastIndexOf("\\"))
+							+ "\\report.txt";
+				}
 
-			// on rapporte dans un autre fichier les termes n'ayant pas eu d'id
-			Comparateur.reportElementNotFound(listTerm, idText,
-					pathDirectoryReport);
+				// on récupère la chaine de caractère */
+				String text = FileUtil.getText(pathFileS);
+				System.out.println(text);
 
-			// suppression de ses termes de la liste
-			Comparateur.filterTerm(idText, noResult);
+				// on traite la chaine de charactère
+				List<String> listTerm = new StopWord(new LowerCase(text), langS)
+						.getList();
+				System.out.println(listTerm.toString());
+				// System.out.println(listTerm.toString());
+				listTerm = Comparateur.removeDuplicate(listTerm);
+				System.out.println(listTerm.toString());
+				// System.out.println("*** Après suppression doublon ***");
+				// System.out.println(listTerm.toString());
+				// récupère la liste d'id babelnet
+				List<String> idText = BabelNetService.getListBabelNetId(
+						listTerm, langS);
+				System.out.println(idText.toString());
 
-			// on écrit la liste dans un autre fichier text
-			FileUtil.writeText(pathDest, idText, true);
+				// on rapporte dans un autre fichier les termes n'ayant pas eu
+				// d'id
+				Comparateur.reportElementNotFound(listTerm, idText,
+						pathDirectoryReport);
+
+				// suppression de ses termes de la liste
+				Comparateur.filterTerm(idText, noResult);
+
+				// on écrit la liste dans un autre fichier text
+				FileUtil.writeText(pathDestS, idText, true);
+			} catch (ParseException e) {
+				// Affichage de l'aide
+			}
 		}
 	}
 
