@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="E:/Programmes/Program Files (x86)/BabelNet/babelnet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Giovanni/Desktop/ontosim-vector-model.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Giovanni/Desktop/Copie clé usb/Projets/TER/Library/commonsCli-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
