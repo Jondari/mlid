@@ -42,43 +42,54 @@ public class ComparateurAppli {
 				CommandLine cmd = parser.parse(option, args);
 				String pathBabelDirS = cmd.getOptionValue("d");
 
-				List<String> testComp1 = FileUtil.getListOfText(pathBabelDirS);
-				// on vérifie que le dossier contient au moins 2 fichiers
-				if (testComp1.size() < 2) {
-					System.out
-							.println("Votre dossier doit contenir au moins 2 fichiers! La comparaison n'aura pas lieu.");
-					System.exit(0);
-				} else {
-					List<List<String>> listOfList = new ArrayList<List<String>>();
-
-					List<String> nameFile = FileUtil
-							.getListNameFile(pathBabelDirS);
-					// System.out.println(nameFile.toString());
-
-					int i = 0;
-					for (String text : testComp1) {
-						/* récupération de la liste de terme */
-						PreprocessFilter token = new Tokenization(text);
-						List<String> listBabelId = token.getList();
-
-						/* ajout du nom de fichier en tête de liste */
-						listBabelId.set(0, nameFile.get(i));
-
-						/* ajout de l'élément à la liste de liste */
-						listOfList.add(listBabelId);
-
-						i++;
-					}
-					Comparateur testComp = new Comparateur(listOfList);
-					testComp.compare();
-
-				}
+				comparateur(pathBabelDirS);
 
 			} catch (ParseException e) {
 				// Affichage de l'aide
 				HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("ComparateurAppli", option);
+				formatter.printHelp("ComparateurAppli", option);
 			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param d
+	 *            dossier contenant les fichier babelnet à comparer
+	 */
+	private static void comparateur(String d) {
+		String pathBabelDirS = d;
+
+		List<String> testComp1 = FileUtil.getListOfText(pathBabelDirS);
+		// on vérifie que le dossier contient au moins 2 fichiers
+		if (testComp1.size() < 2) {
+			System.out
+					.println("Votre dossier doit contenir au moins 2 fichiers! La comparaison n'aura pas lieu.");
+			System.exit(0);
+		} else {
+			List<List<String>> listOfList = new ArrayList<List<String>>();
+
+			List<String> nameFile = FileUtil
+					.getListNameFile(pathBabelDirS);
+			// System.out.println(nameFile.toString());
+
+			int i = 0;
+			for (String text : testComp1) {
+				/* récupération de la liste de terme */
+				PreprocessFilter token = new Tokenization(text);
+				List<String> listBabelId = token.getList();
+
+				/* ajout du nom de fichier en tête de liste */
+				listBabelId.set(0, nameFile.get(i));
+
+				/* ajout de l'élément à la liste de liste */
+				listOfList.add(listBabelId);
+
+				i++;
+			}
+			Comparateur testComp = new Comparateur(listOfList);
+			testComp.compare();
+
 		}
 	}
 }
