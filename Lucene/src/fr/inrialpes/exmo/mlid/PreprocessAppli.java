@@ -21,12 +21,21 @@ import fr.inrialpes.exmo.mlid.util.FileUtil;
 /**
  * Classe permettant d'appliquer un ou plusieurs filtres à un document entré en
  * paramètre et d'obtenir le fichier résultat en spécifiant son chemin d'accès.
- * Il est nécessaire de spécifier la langue du document. Les langues reconnus
- * sont le français, l'anglais le russe et le chinois. Pour spécifier la langue
- * entré fr, en, ru ou ch. Pour spécifier le filtre entré : - Stop pour le
- * StopWord - Stem pour le Stemming - Token pour la Tokenization - Low pour le
- * LowerCase - NGr pour le NGrams - Low+Token - Low+Stop - Low+Stop+Token -
- * Low+Stop+Stem - Low+Stop+Stem+Token - Low+Stop+Stem+NGr
+ * Il est nécessaire de spécifier la langue du document. 
+ * Les langues reconnus sont le français, l'anglais le russe et le chinois. 
+ * Pour spécifier la langue entré fr, en, ru ou ch. 
+ * Pour spécifier le filtre entré : 
+ * - Stop pour le StopWord 
+ * - Stem pour le Stemming 
+ * - Token pour la Tokenization 
+ * - Low pour le LowerCase 
+ * - NGr pour le NGrams 
+ * - Low+Token 
+ * - Low+Stop 
+ * - Low+Stop+Token
+ * - Low+Stop+Stem 
+ * - Low+Stop+Stem+Token 
+ * - Low+Stop+Stem+NGr
  * 
  * @author Giovanni
  * 
@@ -77,15 +86,13 @@ public class PreprocessAppli {
 		option.addOption(filtre);
 		option.addOption(taille);
 
-		PreprocessFilter filter = null;
-
 		if (args.length == 0) {
 			System.out
 					.println("Pas d'argument! modifié les paramètres manuellement!");
-			dirPath = "src/english_stopword.txt";
-			dirPathDest = "src/test.txt";
+			dirPath = "C:/Users/Giovanni/Desktop/File/Fr";
+			dirPathDest = "C:/Users/Giovanni/Desktop/File/Dest";
 			cmd = "Low+Stop+Stem+NGr";
-			lang = "en";
+			lang = "fr";
 		}
 		// sinon on effecture directement le traitement des données.
 		else {
@@ -106,6 +113,42 @@ public class PreprocessAppli {
 				formatter.printHelp("PreprocessAppli", option);
 			}
 		}
+		preprocess(dirPath, dirPathDest, cmd, lang, n);
+	}
+
+	/**
+	 * Méthode effectuant les prétraitements
+	 * 
+	 * @param d1
+	 *            dossier des fichiers à traiter
+	 * @param d2
+	 *            dossier contenant les fichiers résultats
+	 * @param filtre
+	 *            filtre(s) à appliquer
+	 * @param langu
+	 *            langue du fichier
+	 * @param taille
+	 *            la taille des grammes
+	 */
+	public static void preprocess(String d1, String d2, String filtre,
+			String langu, int taille) {
+
+		// dossier des fichiers à traiter
+		String dirPath = d1;
+
+		// dossier contenant les fichiers résultats
+		String dirPathDest = d2;
+
+		// filtre à appliquer
+		String cmd = filtre;
+
+		// langue du fichier
+		String lang = langu;
+
+		// la taille des grammes
+		int n = taille;
+
+		PreprocessFilter filter = null;
 
 		// on récupère la liste des noms des fichiers textes présents dans le
 		// dossier donné en paramètre
