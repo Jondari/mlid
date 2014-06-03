@@ -82,6 +82,36 @@ public class ComputeSim {
 				formatter.printHelp("ComputeSim", option);
 			}
 		}
+		compute(d1S, d2S, vectorTypeS, mesureS);
+	}
+
+	/**
+	 * 
+	 * @param d1
+	 *            dossier contenant les fichiers babelnet d'une langue
+	 * @param d2
+	 *            dossier contenant les fichiers babelnet d'une autre langue
+	 * @param vectorType
+	 *            Type de vecteur à utiliser
+	 * @param mesure
+	 *            Mesure à utiliser
+	 */
+	private static void compute(String d1, String d2, String vectorType,
+			String mesure) {
+		// dossier contenant les fichiers babelnet d'une langue
+		String d1S = d1;
+
+		// dossier contenant les fichiers babelnet d'une langue
+		String d2S = d2;
+
+		// Type de vecteur à utiliser
+		// TF ou TFIDF
+		String vectorTypeS = vectorType;
+
+		// Mesure à utiliser
+		// Cos pour Cosine
+		// Jacc pour Jaccard
+		String mesureS = mesure;
 
 		// Collection qui contiendra l'ensemble des documents
 		DocumentCollection docCollection = new DocumentCollection();
