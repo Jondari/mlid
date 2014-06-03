@@ -108,7 +108,7 @@ public class MainComparateur {
 	}
 
 	/**
-	 * 
+	 * méthode qui compare l'ensemble des fichiers presents dans les dossiers d1 et d2 après leur avoir appliqué un filtre
 	 * @param d1
 	 *            Chemin vers le dossier contenant les fichiers à traiter de
 	 *            langue anglaise

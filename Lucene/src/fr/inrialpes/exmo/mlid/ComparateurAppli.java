@@ -53,7 +53,7 @@ public class ComparateurAppli {
 	}
 
 	/**
-	 * 
+	 * méthode qui compare les fichiers présents dans le dossier d
 	 * @param d
 	 *            dossier contenant les fichier babelnet à comparer
 	 */

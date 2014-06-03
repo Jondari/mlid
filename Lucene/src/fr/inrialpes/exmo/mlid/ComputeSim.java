@@ -86,7 +86,7 @@ public class ComputeSim {
 	}
 
 	/**
-	 * 
+	 * méthode qui genere la matrice des similarités des fichiers presents dans les dossiers d1 et d2
 	 * @param d1
 	 *            dossier contenant les fichiers babelnet d'une langue
 	 * @param d2
