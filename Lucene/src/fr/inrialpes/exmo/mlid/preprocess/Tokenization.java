@@ -16,8 +16,7 @@ public class Tokenization extends PreprocessFilter {
 
 	public Tokenization(PreprocessFilter crtfilter) {
 		this.crtString = crtfilter.getCrtString();
-		String newString = process(crtString);
-		// crtfilter.setCrtString(newString);
+		this.process(crtString);
 	}
 
 	public Tokenization(String text) {
@@ -69,24 +68,5 @@ public class Tokenization extends PreprocessFilter {
 	public List<String> getCrtList() {
 		return crtList;
 	}
-	
-	/*
-	 * public String process(String text) { Tokenizer tokenizer = new
-	 * StandardTokenizer(Version.LUCENE_46, new StringReader(text));
-	 * ArrayList<String> wordList = new ArrayList<String>(); final
-	 * StandardFilter standardFilter = new StandardFilter( Version.LUCENE_46,
-	 * tokenizer); final StopFilter stopFilter = new
-	 * StopFilter(Version.LUCENE_46, standardFilter,
-	 * StopAnalyzer.ENGLISH_STOP_WORDS_SET);
-	 * 
-	 * final CharTermAttribute charTermAttribute = tokenizer
-	 * .addAttribute(CharTermAttribute.class);
-	 * 
-	 * try { stopFilter.reset(); while (stopFilter.incrementToken()) { final
-	 * String token = charTermAttribute.toString().toString();
-	 * //System.out.println("token: " + token); wordList.add(token); } return
-	 * wordList.toString(); } catch (IOException e) { // TODO Auto-generated
-	 * catch block e.printStackTrace(); } return null; }
-	 */
 
 }
