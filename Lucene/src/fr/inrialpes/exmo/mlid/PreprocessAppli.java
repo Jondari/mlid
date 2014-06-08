@@ -91,7 +91,7 @@ public class PreprocessAppli {
 					.println("Pas d'argument! modifié les paramètres manuellement!");
 			dirPath = "C:/Users/Giovanni/Desktop/File/Fr";
 			dirPathDest = "C:/Users/Giovanni/Desktop/File/Dest";
-			cmd = "Low+Stop+Stem+NGr";
+			cmd = "Low+Stop";
 			lang = "fr";
 		}
 		// sinon on effecture directement le traitement des données.

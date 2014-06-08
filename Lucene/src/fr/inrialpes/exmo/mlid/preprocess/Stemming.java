@@ -8,6 +8,7 @@ import org.tartarus.snowball.ext.FrenchStemmer;
 import org.tartarus.snowball.ext.PorterStemmer;
 import org.tartarus.snowball.ext.RussianStemmer;
 
+
 public class Stemming extends PreprocessFilter {
 
 	/**
@@ -87,8 +88,10 @@ public class Stemming extends PreprocessFilter {
 			result = stem.getCurrent();
 			if (i == 0) {
 				newText = result;
+				System.out.println("stem " + newText);
 			} else {
 				newText = newText + " " + result;
+				System.out.println("stem " + newText);
 			}
 		}
 		this.crtString = newText;

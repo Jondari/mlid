@@ -2,18 +2,10 @@ package fr.inrialpes.exmo.mlid.preprocess;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
-
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.core.StopFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.Version;
+import java.util.StringTokenizer;
 
 public class StopWord extends PreprocessFilter {
 
@@ -94,56 +86,13 @@ public class StopWord extends PreprocessFilter {
 	 */
 	public String process(String text, String lang) {
 
-		TokenStream tokenStream = new StandardTokenizer(Version.LUCENE_46,
-				new StringReader(text));
-
-		List<String> stopWords = null;
-		/* Sélection de l'anti-dictionnaire à utiliser */
-		if (lang.equals("en")) {
-			stopWords = ConstantStopWord.english_StopWord; // your english list
-															// of stop
-															// words.....
-		} else if (lang.equals("fr")) {
-			stopWords = ConstantStopWord.french_StopWord; // your french list of
-															// stop words.....
-		} else if (lang.equals("ch")) {
-			stopWords = ConstantStopWord.chinese_StopWord; // your chinese list
-															// of stop
-															// words.....
+		String wordList = stopWordFilter(text, lang);
+		if (lang.equals("fr")) {
+			wordList = frenchStopWordFilter(wordList);
 		}
-		tokenStream = new StopFilter(Version.LUCENE_46, tokenStream,
-				StopFilter.makeStopSet(Version.LUCENE_46, stopWords));
-		// ArrayList<String> wordList = new ArrayList<String>();
-		String wordList = "";
-		final CharTermAttribute charTermAttribute = tokenStream
-				.addAttribute(CharTermAttribute.class);
-		/* suppression des mots vide */
-		try {
-			tokenStream.reset();
-			int i = 0;
-			while (tokenStream.incrementToken()) {
-				final String token = charTermAttribute.toString().toString();
-				// System.out.println("token: " + token);
-				// wordList.add(token);
-				if (i == 0) {
-					wordList = wordList + token;
-					i++;
-				} else {
-					wordList = wordList + " " + token;
-					// System.out.println("wordList: " + wordList);
-				}
-			}
-			// this.crtString = wordList.toString();
-			// return wordList.toString();
-			if (lang.equals("fr")) {
-				wordList = frenchStopWordFilter(wordList);
-			}
-			this.crtString = wordList;
-			return wordList;
-		} catch (IOException e) { // TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		wordList = removePunctuation(wordList);
+		this.crtString = wordList;
+		return wordList;
 	}
 
 	/**
@@ -183,6 +132,73 @@ public class StopWord extends PreprocessFilter {
 	private String frenchStopWordFilter(String text) {
 		String tmp = text;
 		for (String stopWord : ConstantStopWord.french_StopWord2) {
+			if (tmp.contains(stopWord)) {
+				tmp = tmp.replace(stopWord, "");
+			}
+		}
+		return tmp;
+	}
+
+	/**
+	 * Méthode qui filtre les mots vides de la chaine de caratères entrée en
+	 * fonction de la langue entré en paramètre
+	 * 
+	 * @param text
+	 * @param lang
+	 * @return
+	 */
+	private String stopWordFilter(String text, String lang) {
+		String tmp = text;
+		List<String> stopWords = null;
+		if (lang.equals("en")) {
+			// your english list of stop words.....
+			stopWords = ConstantStopWord.english_StopWord;
+		} else if (lang.equals("fr")) {
+			// your french list of stop words.....
+			stopWords = ConstantStopWord.french_StopWord;
+		} else if (lang.equals("ch")) {
+			// your chinese list of stop words.....
+			stopWords = ConstantStopWord.chinese_StopWord;
+		}
+		for (String stopWord : stopWords) {
+			if (tmp.contains(stopWord)) {
+				tmp = stringFilter(tmp, stopWord);
+			}
+		}
+		return tmp;
+	}
+
+	/**
+	 * Méthode qui élimine de la chaine de caractère entré en paramètre le mot
+	 * spécifié.
+	 * 
+	 * @param text
+	 *            chaine de caactère à filtrer
+	 * @param wordToFilter
+	 *            mot à enlever
+	 * @return nouvelle chaine ne possédant plus le mot spécifié
+	 **/
+	private String stringFilter(String text, String wordToFilter) {
+		String token = "";
+		String result = "";
+		StringTokenizer st = new StringTokenizer(text);
+		// nnombre de mot de la chaine de caractère
+		//int numToken = st.countTokens();
+		while (st.hasMoreTokens()) {
+			token = st.nextToken();
+			result += (token.equals(wordToFilter)) ? "" : token + " ";
+		}
+		return result;
+	}
+	
+	/**
+	 * Méthode qui élimine la ponctuation du texte entré en paramètre
+	 * @param text
+	 * @return
+	 */
+	private String removePunctuation(String text){
+		String tmp = text;
+		for (String stopWord : ConstantStopWord.puntuation) {
 			if (tmp.contains(stopWord)) {
 				tmp = tmp.replace(stopWord, "");
 			}

@@ -1,15 +1,7 @@
 package fr.inrialpes.exmo.mlid.preprocess;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.shingle.ShingleFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.Version;
 
 public class NGrams extends PreprocessFilter {
 
@@ -35,30 +27,36 @@ public class NGrams extends PreprocessFilter {
 		return null;
 	}
 
-	@SuppressWarnings("resource")
 	public List<String> process(String text, int n) {
-		TokenStream tokenizer = new StandardTokenizer(Version.LUCENE_46,
-				new StringReader(text));
-		tokenizer = new ShingleFilter(tokenizer, n, n);
-		CharTermAttribute charTermAttribute = tokenizer
-				.addAttribute(CharTermAttribute.class);
 
-		try {
-			tokenizer.reset();
+			String[] grams = getNgrams(text, n);
 			List<String> wordList = new ArrayList<String>();
-			while (tokenizer.incrementToken()) {
-				String token = charTermAttribute.toString();
-				if (token.contains(" ")) {
-					// System.out.println("token : " + token);
-					wordList.add(token);
-				}
+			for(int i=0;i<grams.length;i++) {
+					wordList.add(grams[i]);
 			}
 			return wordList;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	}
+	
+	/**
+	 * Méthode qui retourne un tableau de tout les ngrams de taille entré en paramètre
+	 * @param text 
+	 * 				texte devant être de plus d'un caractère
+	 * @param length
+	 * 				taille du gramme
+	 * @return
+	 */
+	private String[] getNgrams(String text, int length) {
+	    String[] parts = text.split(" ");
+	    String[] result = new String[parts.length - length + 1];
+	    for(int i = 0; i < parts.length - length + 1; i++) {
+	       StringBuilder sb = new StringBuilder();
+	       for(int k = 0; k < length; k++) {
+	           if(k > 0) sb.append(' ');
+	           sb.append(parts[i+k]);
+	       }
+	       result[i] = sb.toString();
+	    }
+	    return result;
 	}
 	
 	/**
