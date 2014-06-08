@@ -79,6 +79,14 @@ public class ConstantStopWord {
 	 */
 	private static String french_list2[] = { "qu'", "c'", "d'", "j'", "l'",
 			"m'", "n'", "s'", "t'" };
+	
+	/**
+	 * Liste des élément de ponctuation"
+	 */
+	public static String puntuation[] = { ",", ";", ".", "?", ":", "/", "!",
+			"#", "\\", "(", ")", "{", "}", "[", "]", "°", "~", "-", "+", "=",
+			"|", "¨", "*", "&", "%", "$", "€", "£", "¤", "§", "^", "<", ">",
+			"\"", "`", "@", "'", "«", "»" };
 
 	public static List<String> chinese_StopWord = new ArrayList<String>(
 			Arrays.asList(chinese_list));;
