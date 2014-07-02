@@ -13,8 +13,8 @@ import org.apache.commons.cli.ParseException;
 import fr.inrialpes.exmo.mlid.babelNet.BabelNetService;
 import fr.inrialpes.exmo.mlid.preprocess.LowerCase;
 import fr.inrialpes.exmo.mlid.preprocess.StopWord;
-import fr.inrialpes.exmo.mlid.sim.Comparateur;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
+import fr.inrialpes.exmo.mlid.util.ListUtil;
 
 public class BabelNetAppli {
 
@@ -42,7 +42,8 @@ public class BabelNetAppli {
 		option.addOption(lang);
 
 		if (args.length == 0) {
-			throw new RuntimeException ("Pas d'argument! Veuillez entrer des arguments!"); 
+			throw new RuntimeException(
+					"Pas d'argument! Veuillez entrer des arguments!");
 		}
 		// sinon on effecture directement le traitement des données.
 		else {
@@ -68,7 +69,9 @@ public class BabelNetAppli {
 	}
 
 	/**
-	 * Méthode qui retourne un fichier f2 contenant les id babelnet des mots du fichier f1
+	 * Méthode qui retourne un fichier f2 contenant les id babelnet des mots du
+	 * fichier f1
+	 * 
 	 * @param f1
 	 *            fichier à traiter
 	 * @param f2
@@ -107,7 +110,7 @@ public class BabelNetAppli {
 				.getList();
 		System.out.println(listTerm.toString());
 		// System.out.println(listTerm.toString());
-		listTerm = Comparateur.removeDuplicate(listTerm);
+		listTerm = ListUtil.removeDuplicate(listTerm);
 		System.out.println(listTerm.toString());
 		// System.out.println("*** Après suppression doublon ***");
 		// System.out.println(listTerm.toString());
@@ -118,11 +121,10 @@ public class BabelNetAppli {
 
 		// on rapporte dans un autre fichier les termes n'ayant pas eu
 		// d'id
-		Comparateur
-				.reportElementNotFound(listTerm, idText, pathDirectoryReport);
+		ListUtil.reportElementNotFound(listTerm, idText, pathDirectoryReport);
 
 		// suppression de ses termes de la liste
-		Comparateur.filterTerm(idText, noResult);
+		ListUtil.filterTerm(idText, noResult);
 
 		// on écrit la liste dans un autre fichier text
 		FileUtil.writeText(pathDestS, idText, true);

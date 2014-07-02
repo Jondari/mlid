@@ -18,6 +18,7 @@ import fr.inrialpes.exmo.mlid.preprocess.PreprocessFilter;
 import fr.inrialpes.exmo.mlid.preprocess.Tokenization;
 import fr.inrialpes.exmo.mlid.sim.Comparateur;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
+import fr.inrialpes.exmo.mlid.util.ListUtil;
 
 public class MainComparateur {
 
@@ -231,13 +232,17 @@ public class MainComparateur {
 
 		List<String> testComp1 = FileUtil.getListOfText(pathTemp1);
 		List<String> testComp2 = FileUtil.getListOfText(pathTemp2);
+		
+		List<String> NameComp1 = FileUtil.getListNameFile(pathDirectoryLang1);
+		List<String> NameComp2 = FileUtil.getListNameFile(pathDirectoryLang2);
+		
 		/* liste qui contiendra les listes de termes */
 		List<List<String>> listOfList = new ArrayList<List<String>>();
 
 		// on récupère pour chaque document de langue anglaise leur liste de
 		// terme, à partir de cette liste de terme on récupère la liste d'id
 		// babelenet correspondante
-		int i = 1;
+		int i = 0;
 		for (String text : testComp1) {
 			// récupération de la liste de terme
 			PreprocessFilter token = new Tokenization(text);
@@ -249,14 +254,16 @@ public class MainComparateur {
 			// System.out.println(listIdBabel1.toString());
 
 			// écriture dans un fichier des termes n'ayant pas d'id babelnet
-			Comparateur.reportElementNotFound(listOriginal, listIdBabel1,
-					pathReport.substring(0, pathReport.length()-4) + "_log_" + i + "en.txt");
+			ListUtil.reportElementNotFound(listOriginal, listIdBabel1,
+					pathReport.substring(0, pathReport.length() - 4) + "_log_"
+							+ NameComp1.get(i) + "(en).txt");
 
 			// suppression de ses termes de la liste
-			Comparateur.filterTerm(listIdBabel1, noResult);
+			ListUtil.filterTerm(listIdBabel1, noResult);
 
 			// ajout du nom de fichier en tête de liste
-			listIdBabel1.add(0, i + "en");
+			//listIdBabel1.add(0, i + "en");
+			listIdBabel1.add(0, NameComp1.get(i) + "(en)");
 
 			// ajout de l'élément à la liste de liste
 			listOfList.add(listIdBabel1);
@@ -264,7 +271,7 @@ public class MainComparateur {
 			i++;
 		}
 
-		i = 1;
+		i = 0;
 
 		// on récupère pour chaque document de langue française leur liste de
 		// terme à partir de cette liste de terme on récupère la liste d'id
@@ -275,12 +282,14 @@ public class MainComparateur {
 
 			List<String> listIdBabel2 = BabelNetService.getListBabelNetId(
 					listOriginal2, "fr");
-			Comparateur.reportElementNotFound(listOriginal2, listIdBabel2,
-					pathReport.substring(0, pathReport.length()-4) + "_log_" + i + "fr.txt");
+			ListUtil.reportElementNotFound(listOriginal2, listIdBabel2,
+					pathReport.substring(0, pathReport.length() - 4) + "_log_"
+							+ NameComp2.get(i) + "(fr).txt");
 
-			Comparateur.filterTerm(listIdBabel2, noResult);
+			ListUtil.filterTerm(listIdBabel2, noResult);
 
-			listIdBabel2.add(0, i + "fr");
+			//listIdBabel2.add(0, i + "fr");
+			listIdBabel2.add(0, NameComp2.get(i) + "(fr)");
 
 			listOfList.add(listIdBabel2);
 
@@ -288,7 +297,10 @@ public class MainComparateur {
 		}
 		Comparateur testComp = new Comparateur(listOfList);
 		testComp.setPathReport(pathReport);
-		testComp.compare();
+		testComp.compareOrderedDesc();
+
+		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt" );
+		testComp.compareDiffLang();
 	}
 
 	/**
@@ -319,13 +331,17 @@ public class MainComparateur {
 
 		List<String> testComp1 = FileUtil.getListOfText(pathDirectoryLang1);
 		List<String> testComp2 = FileUtil.getListOfText(pathDirectoryLang2);
+		
+		List<String> NameComp1 = FileUtil.getListNameFile(pathDirectoryLang1);
+		List<String> NameComp2 = FileUtil.getListNameFile(pathDirectoryLang2);
+		
 		/* liste qui contiendra les listes de termes */
 		List<List<String>> listOfList = new ArrayList<List<String>>();
 
 		// on récupère pour chaque document de langue anglaise leur liste de
 		// terme, à partir de cette liste de terme on récupère la liste d'id
 		// babelenet correspondante
-		int i = 1;
+		int i = 0;
 		for (String text : testComp1) {
 			// récupération de la liste de terme
 			PreprocessFilter token = new Tokenization(text);
@@ -337,14 +353,16 @@ public class MainComparateur {
 			// System.out.println(listIdBabel1.toString());
 
 			// écriture dans un fichier des termes n'ayant pas d'id babelnet
-			Comparateur.reportElementNotFound(listOriginal, listIdBabel1,
-					pathReport.substring(0, pathReport.length()-4) + "_log_" + i + "en.txt");
+			ListUtil.reportElementNotFound(listOriginal, listIdBabel1,
+					pathReport.substring(0, pathReport.length() - 4) + "_log_"
+							+ NameComp1.get(i) + "(en).txt");
 
 			// suppression de ses termes de la liste
-			Comparateur.filterTerm(listIdBabel1, noResult);
+			ListUtil.filterTerm(listIdBabel1, noResult);
 
 			// ajout du nom de fichier en tête de liste
-			listIdBabel1.add(0, i + "en");
+			//listIdBabel1.add(0, i + "en");
+			listIdBabel1.add(0, NameComp1.get(i) + "(en)");
 
 			// ajout de l'élément à la liste de liste
 			listOfList.add(listIdBabel1);
@@ -352,7 +370,7 @@ public class MainComparateur {
 			i++;
 		}
 
-		i = 1;
+		i = 0;
 
 		// on récupère pour chaque document de langue française leur liste de
 		// terme à partir de cette liste de terme on récupère la liste d'id
@@ -363,12 +381,14 @@ public class MainComparateur {
 
 			List<String> listIdBabel2 = BabelNetService.getListBabelNetId(
 					listOriginal2, "fr");
-			Comparateur.reportElementNotFound(listOriginal2, listIdBabel2,
-					pathReport.substring(0, pathReport.length()-4) + "_log_" + i + "fr.txt");
+			ListUtil.reportElementNotFound(listOriginal2, listIdBabel2,
+					pathReport.substring(0, pathReport.length() - 4) + "_log_"
+							+ NameComp2.get(i) + "fr.txt");
 
-			Comparateur.filterTerm(listIdBabel2, noResult);
+			ListUtil.filterTerm(listIdBabel2, noResult);
 
-			listIdBabel2.add(0, i + "fr");
+			//listIdBabel2.add(0, i + "fr");
+			listIdBabel2.add(0, NameComp2.get(i) + "(fr)");
 
 			listOfList.add(listIdBabel2);
 
@@ -376,7 +396,10 @@ public class MainComparateur {
 		}
 		Comparateur testComp = new Comparateur(listOfList);
 		testComp.setPathReport(pathReport);
-		testComp.compare();
+		testComp.compareOrderedDesc();
+		
+		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt");
+		testComp.compareDiffLang();
 	}
 
 }
