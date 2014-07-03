@@ -22,8 +22,8 @@ import fr.inrialpes.exmo.mlid.util.FileUtil;
  * Classe permettant d'appliquer un ou plusieurs filtres à un document entré en
  * paramètre et d'obtenir le fichier résultat en spécifiant son chemin d'accès.
  * Il est nécessaire de spécifier la langue du document. 
- * Les langues reconnus sont le français, l'anglais le russe et le chinois. 
- * Pour spécifier la langue entré fr, en, ru ou ch. 
+ * Les langues reconnus sont le français, l'anglais et le chinois. 
+ * Pour spécifier la langue entré fr, en ou zh. 
  * Pour spécifier le filtre entré : 
  * - Stop pour le StopWord 
  * - Stem pour le Stemming 

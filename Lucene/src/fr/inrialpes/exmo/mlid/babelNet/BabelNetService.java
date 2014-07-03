@@ -57,7 +57,7 @@ public class BabelNetService {
 			} else if (lang.equalsIgnoreCase("en")) {
 				langage = Language.EN;
 
-			} else if (lang.equalsIgnoreCase("ch")) {
+			} else if (lang.equalsIgnoreCase("zh")) {
 				langage = Language.ZH;
 			} else if (lang.equalsIgnoreCase("ru")) {
 				langage = Language.RU;

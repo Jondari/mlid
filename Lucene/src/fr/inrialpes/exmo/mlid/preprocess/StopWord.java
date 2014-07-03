@@ -30,7 +30,7 @@ public class StopWord extends PreprocessFilter {
 
 	/**
 	 * effectue un filtrage des mots vides de la langue spécifiée pour le texte
-	 * entré en paramètre langue spécifiable anglais par en chinois par ch
+	 * entré en paramètre langue spécifiable anglais par en chinois par zh
 	 * français par fr
 	 */
 	public StopWord(String text, String lang) {
@@ -156,7 +156,7 @@ public class StopWord extends PreprocessFilter {
 		} else if (lang.equals("fr")) {
 			// your french list of stop words.....
 			stopWords = ConstantStopWord.french_StopWord;
-		} else if (lang.equals("ch")) {
+		} else if (lang.equals("zh")) {
 			// your chinese list of stop words.....
 			stopWords = ConstantStopWord.chinese_StopWord;
 		}
