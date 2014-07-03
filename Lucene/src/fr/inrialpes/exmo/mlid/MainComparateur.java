@@ -297,10 +297,10 @@ public class MainComparateur {
 		}
 		Comparateur testComp = new Comparateur(listOfList);
 		testComp.setPathReport(pathReport);
-		testComp.compareOrderedDesc();
+		testComp.compareOrderedDescU();
 
 		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt" );
-		testComp.compareDiffLang();
+		testComp.compareDiffLangU();
 	}
 
 	/**
@@ -396,10 +396,10 @@ public class MainComparateur {
 		}
 		Comparateur testComp = new Comparateur(listOfList);
 		testComp.setPathReport(pathReport);
-		testComp.compareOrderedDesc();
+		testComp.compareOrderedDescU();
 		
 		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt");
-		testComp.compareDiffLang();
+		testComp.compareDiffLangU();
 	}
 
 }

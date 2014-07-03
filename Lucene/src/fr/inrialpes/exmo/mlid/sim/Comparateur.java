@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import fr.inrialpes.exmo.mlid.util.Couple;
+import fr.inrialpes.exmo.mlid.util.Couples;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
 import fr.inrialpes.exmo.mlid.util.ListUtil;
 import fr.inrialpes.exmo.mlid.util.MapUtil;
@@ -209,6 +211,54 @@ public class Comparateur {
 	/**
 	 * Méthode qui compare les listes d'id présent dans listOfList. Elle écrit
 	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
+	 * couple de liste ont en commun sans doublon.
+	 */
+	public void compareOrderedDescU() {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+
+		// création d'un ensemble pouvant contenir des listes
+		Couples couplesName = new Couples();
+
+		for (List<String> list1 : listOfList) {
+			for (List<String> list2 : listOfList) {
+				if (!list1.equals(list2)) {
+					String name1 = list1.get(0);
+					String name2 = list2.get(0);
+					String key = name1 + "/" + name2;
+					int nbTerm = getNbCommonTerm(list1, list2);
+
+					// si ce couple de noms n'existe pas
+					if (!couplesName.exist(name1, name2)) {
+						// on le crée
+						Couple crtCpl = new Couple(name1, name2);
+						// on l'ajoute à l'ensemble et la map
+						couplesName.add(crtCpl);
+						map.put(key, nbTerm);
+					}
+				}
+			}
+		}
+
+		// on trie la map par ordre décroissant de valer
+		map = MapUtil.sortByValueDesc(map);
+		// on écrit dans le fichier rapport le nombre de termes que les fichiers
+		// on en commun
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			Integer value = (Integer) entry.getValue();
+			String[] names = key.split("/");
+			String name1 = names[0];
+			String name2 = names[1];
+
+			reportNbCommonTerm(name1, name2, value, pathReport);
+		}
+	}
+
+	/**
+	 * Méthode qui compare les listes d'id présent dans listOfList. Elle écrit
+	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
 	 * couple de liste ont en commun.
 	 */
 	public void compareDiffLang() {
@@ -239,7 +289,58 @@ public class Comparateur {
 
 			if ((name1.substring(name1.length() - 3, name1.length() - 1)
 					.equalsIgnoreCase("en") && !name2.substring(
-					name2.length() - 3, name2.length() - 1).equalsIgnoreCase("en"))
+					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
+					"en"))
+					|| (name1.substring(name1.length() - 3, name1.length() - 1)
+							.equalsIgnoreCase("fr") && !name2.substring(
+							name2.length() - 3, name2.length() - 1)
+							.equalsIgnoreCase("fr"))) {
+				reportNbCommonTerm(name1, name2, value, pathReport);
+			}
+
+		}
+	}
+
+	/**
+	 * Méthode qui compare les listes d'id présent dans listOfList. Elle écrit
+	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
+	 * couple de liste ont en commun sans doublon.
+	 */
+	public void compareDiffLangU() {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+
+		Couples couplesName = new Couples();
+
+		for (List<String> list1 : listOfList) {
+			for (List<String> list2 : listOfList) {
+				if (!list1.equals(list2)) {
+					String name1 = list1.get(0);
+					String name2 = list2.get(0);
+					String key = name1 + "/" + name2;
+					int nbTerm = getNbCommonTerm(list1, list2);
+					if (!couplesName.exist(name1, name2)) {
+						Couple crtCpl = new Couple(name1, name2);
+						couplesName.add(crtCpl);
+						map.put(key, nbTerm);
+					}
+				}
+			}
+		}
+
+		map = MapUtil.sortByValueDesc(map);
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			Integer value = (Integer) entry.getValue();
+			String[] names = key.split("/");
+			String name1 = names[0];
+			String name2 = names[1];
+
+			if ((name1.substring(name1.length() - 3, name1.length() - 1)
+					.equalsIgnoreCase("en") && !name2.substring(
+					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
+					"en"))
 					|| (name1.substring(name1.length() - 3, name1.length() - 1)
 							.equalsIgnoreCase("fr") && !name2.substring(
 							name2.length() - 3, name2.length() - 1)
