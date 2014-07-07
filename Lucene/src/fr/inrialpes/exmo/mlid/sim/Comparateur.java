@@ -27,18 +27,30 @@ public class Comparateur {
 	public List<List<String>> listOfList = null;
 
 	/**
+	 * Liste contenant les vecteurs correspondant au texte
+	 */
+	public List<List<List<String>>> listOfList2 = null;
+
+	public Comparateur() {
+	}
+
+	/**
 	 * 
 	 * @param list
 	 *            liste des listes à comparer
 	 */
 	public Comparateur(List<List<String>> list) {
 		listOfList = list;
-		/* on supprime les doublons de la liste */
-		for (List<String> tempList : list) {
-			tempList = ListUtil.removeDuplicate(tempList);
-		}
 	}
 
+	/**
+	 * 
+	 * @param list
+	 *            liste des listes à comparer
+	 */
+	public Comparateur(ArrayList<List<List<String>>> listOfList) {
+		listOfList2 = listOfList;
+	}
 
 	/**
 	 * Méthode qui retourne le nombre de terme en commun entre 2 listes
@@ -53,6 +65,28 @@ public class Comparateur {
 		s1.addAll(list1);
 		s1.retainAll(list2);
 		return s1.size();
+	}
+
+	/**
+	 * Méthode qui retourne true si les deux listes de listes ont au moins un
+	 * terme en commun.
+	 * 
+	 * @param listOfList1
+	 * @param listOfList2
+	 * @return
+	 */
+	public boolean haveCommonTerm(List<List<String>> listOfList1,
+			List<List<String>> listOfList2) {
+
+		for (List<String> listCrt1 : listOfList1) {
+			for (List<String> listCrt2 : listOfList2) {
+				if (!listCrt1.equals(listCrt2)) {
+					if (this.getNbCommonTerm(listCrt1, listCrt2) >= 1)
+						return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -278,6 +312,60 @@ public class Comparateur {
 						Couple crtCpl = new Couple(name1, name2);
 						couplesName.add(crtCpl);
 						map.put(key, nbTerm);
+					}
+				}
+			}
+		}
+
+		map = MapUtil.sortByValueDesc(map);
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			Integer value = (Integer) entry.getValue();
+			String[] names = key.split("/");
+			String name1 = names[0];
+			String name2 = names[1];
+
+			if ((name1.substring(name1.length() - 3, name1.length() - 1)
+					.equalsIgnoreCase(lang1) && !name2.substring(
+					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
+					lang1))
+					|| (name1.substring(name1.length() - 3, name1.length() - 1)
+							.equalsIgnoreCase(lang2) && !name2.substring(
+							name2.length() - 3, name2.length() - 1)
+							.equalsIgnoreCase(lang2))) {
+				reportNbCommonTerm(name1, name2, value, pathReport);
+			}
+
+		}
+	}
+
+	/**
+	 * Méthode qui compare les listes d'id présent dans listOfList. Elle écrit
+	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
+	 * couple de liste ont en commun sans doublon. (avec liste d'ID babelNet)
+	 */
+	public void compareDiffLangU(String lang1, String lang2, boolean listID) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+
+		Couples couplesName = new Couples();
+		int nbTerm = 0;
+		
+		for (List<List<String>> list1 : listOfList2) {
+			for (List<List<String>> list2 : listOfList2) {
+				if (!list1.equals(list2)) {
+					String name1 = list1.get(0).get(0);
+					String name2 = list2.get(0).get(0);
+					String key = name1 + "/" + name2;
+					System.out.println("key = " + key);
+					if(haveCommonTerm(list1, list2)){
+						nbTerm++;
+						if (!couplesName.exist(name1, name2)) {
+							Couple crtCpl = new Couple(name1, name2);
+							couplesName.add(crtCpl);
+							map.put(key, nbTerm);
+						}
 					}
 				}
 			}
