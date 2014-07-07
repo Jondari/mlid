@@ -46,6 +46,25 @@ public class ListUtil {
 	}
 	
 	/**
+	 * Méthode qui supprime toutes les listes vides
+	 * présentes dans la liste entrée en paramètre
+	 * 
+	 * @param listToFilter
+	 *            liste à traiter
+	 * @param term
+	 *            terme à supprimer de la liste
+	 */
+	public static void filterEmptyList(List<List<String>> listToFilter, String term) {
+		for (int i = 0; i < listToFilter.size(); i++) {
+			if (listToFilter.get(i).isEmpty()) {
+				listToFilter.remove(i);
+				if (i > 0)
+					i--;
+			}
+		}
+	}
+	
+	/**
 	 * Méthode qui écrit dans un fichier les termes n'ayant pas obtenu
 	 * d'identifiant babelnet
 	 */
@@ -64,6 +83,34 @@ public class ListUtil {
 		// System.out.println("*****************************************");
 		/*
 		 * on écrit les mots qui correspoondent aux indices récupéré dans le
+		 * fichier report.txt
+		 */
+		for (int indice : listIndice) {
+			FileUtil.writeText(reportPath, listOriginal.get(indice) + " ", true);
+			// System.out.println(listOriginal.get(indice));
+			FileUtil.writeText(reportPath, "\r", true);
+		}
+	}
+	
+	
+	
+	/**
+	 * Méthode qui écrit dans un fichier les termes n'ayant pas obtenu
+	 * d'identifiant babelnet 
+	 */
+	public static void reportElementNotFoundL(List<String> listOriginal,
+			List<List<String>> listBabelnet, String reportPath) {
+		String noResult = "No result found";
+		/* on récupère l'indice de tous les termes noResult */
+		ArrayList<Integer> listIndice = new ArrayList<Integer>();
+		for (int i = 0; i < listBabelnet.size(); i++) {
+
+			if (listBabelnet.get(i).isEmpty()) {
+				listIndice.add(i);
+			}
+		}
+		/*
+		 * on écrit les mots qui correspondent aux indices récupéré dans le
 		 * fichier report.txt
 		 */
 		for (int indice : listIndice) {

@@ -34,6 +34,8 @@ public class BabelNetService {
 	private static String noResult = "No result found";
 
 	public static Map<String, String> mapId = new HashMap<String, String>();
+	
+	public static Map<String, List<String>> mapIds = new HashMap<String, List<String>>();
 
 	/**
 	 * @deprecated
@@ -113,6 +115,29 @@ public class BabelNetService {
 				mapId.put(term, tempId);
 			}
 			listBabelNet.add(mapId.get(term));
+		}
+		return listBabelNet;
+	}
+	
+	/**
+	 * Méthode qui pour une liste de terme donnée, retourne la liste d'ID
+	 * babelnet correspondant
+	 * 
+	 * @param listTerm
+	 *            liste des termes dont on veut l'id babelnet
+	 * @param lang
+	 *            langue de la liste de terme
+	 * @return
+	 */
+	public static List<List<String>> getListBabelNetIds(List<String> listTerm,
+			String lang) {
+		List<List<String>> listBabelNet = new ArrayList<>();
+		for (String term : listTerm) {
+			if (!mapIds.containsKey(term)) {
+				List<String> tempId = BabelNetService.getListId(term, lang);
+				mapIds.put(term, tempId);
+			}
+			listBabelNet.add(mapIds.get(term));
 		}
 		return listBabelNet;
 	}

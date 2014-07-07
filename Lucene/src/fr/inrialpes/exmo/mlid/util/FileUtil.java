@@ -167,6 +167,69 @@ public class FileUtil {
 	}
 
 	/**
+	 * Méthode qui permet d'écrire le contenu d'une liste de liste dans un
+	 * fichier.
+	 * 
+	 * @param filePath
+	 *            chemin vers le fichier sur lequel on souhaite écrire
+	 * @param listText
+	 *            liste des chaines de caractères qui sera écrite dans le
+	 *            fichier
+	 * @param token
+	 *            booléen valant vrai s'il l'on souhaite afficher un mot par
+	 *            ligne
+	 */
+	public static void writeTextL(String filePath, List<List<String>> listText,
+			boolean token) {
+
+		FileWriter writer = null;
+		if (token) {
+			try {
+				writer = new FileWriter(filePath, false);
+				for (List<String> list : listText) {
+					for (String text : list) {
+						writer.write(text, 0, text.length());
+						writer.write("\r\n");
+					}
+					writer.write("\r\n");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			try {
+				writer = new FileWriter(filePath, false);
+				for (List<String> list : listText) {
+					for (String text : list) {
+						writer.write(text, 0, text.length());
+						writer.write(" ");
+					}
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Méthode qui permet d'écrire le contenu d'une liste dans un fichier.
 	 * 
 	 * @param filePath
@@ -339,6 +402,83 @@ public class FileUtil {
 					String text = key + " = " + value;
 					writer.write(text, 0, text.length());
 					writer.write(" ");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Méthode qui permet d'écrire le contenu d'une Map dans un fichier.
+	 * 
+	 * @param filePath
+	 *            chemin vers le fichier sur lequel on souhaite écrire
+	 * @param listText
+	 *            liste des chaines de caractères qui sera écrite dans le
+	 *            fichier
+	 * @param token
+	 *            booléen valant vrai s'il l'on souhaite afficher un mot par
+	 *            ligne
+	 */
+	public static void writeTextL(String filePath,
+			Map<String, List<String>> mapText, boolean token) {
+
+		FileWriter writer = null;
+		if (token) {
+			try {
+				writer = new FileWriter(filePath, false);
+
+				Iterator iterator = mapText.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) iterator.next();
+					String key = (String) entry.getKey();
+					int j = 0;
+					for (int i = 0; i < mapText.get(key).size(); i++) {
+						String value = mapText.get(key).get(i);
+
+						String text = key + " = " + value;
+
+						writer.write(text, 0, text.length());
+						writer.write("\r\n");
+					}
+					// writer.write("\r\n");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			try {
+				writer = new FileWriter(filePath, false);
+				Iterator iterator = mapText.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) iterator.next();
+					String key = (String) entry.getKey();
+					for (int i = 0; i < mapText.get(key).size(); i++) {
+						String value = mapText.get(key).get(i);
+
+						String text = key + " = " + value;
+						writer.write(text, 0, text.length());
+						writer.write(" ");
+					}
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();

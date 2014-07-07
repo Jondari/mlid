@@ -112,7 +112,11 @@ public class BabelNetAppli {
 			List<String> listOriginal = token.getList();
 
 			// récupération des id correspondant
-			List<String> listIdBabel = BabelNetService.getListBabelNetId(
+			
+			/*
+			 * Pour travailler avec un seul identifiant
+			 * 
+			 * List<String> listIdBabel = BabelNetService.getListBabelNetId(
 					listOriginal, lang);
 			// System.out.println(listIdBabel1.toString());
 
@@ -130,13 +134,34 @@ public class BabelNetAppli {
 							+ NameComp1.get(i).substring(0,
 									NameComp1.get(i).length() - 4) + "ID.txt",
 					listIdBabel, true);
+			*/
 
+			// pour travailler avec la liste des identifiants
+			List<List<String>> listIdBabel = BabelNetService.getListBabelNetIds(
+			listOriginal, lang);
+			// System.out.println(listIdBabel1.toString());
+
+			// écriture dans un fichier des termes n'ayant pas d'id babelnet
+			ListUtil.reportElementNotFoundL(listOriginal, listIdBabel, dirReport
+			+ separator + "reportNotFound_" + NameComp1.get(i));
+
+			// suppression de ses termes de la liste
+			ListUtil.filterEmptyList(listIdBabel, noResult);
+
+			// écriture de la liste d'ID dans un fichier
+			FileUtil.writeTextL(
+			dirDest
+					+ separator
+					+ NameComp1.get(i).substring(0,
+							NameComp1.get(i).length() - 4) + "ID.txt",
+			listIdBabel, true);
+			
 			i++;
 		}
 
 		// Copie de la HashMap dans le fichier HashMapID.txt
-		FileUtil.writeText(dirReport + separator + "HashMapID.txt",
-				BabelNetService.mapId, true);
+		FileUtil.writeTextL(dirReport + separator + "HashMapID.txt",
+				BabelNetService.mapIds, true);
 	}
 
 }
