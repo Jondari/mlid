@@ -3,6 +3,7 @@ package fr.inrialpes.exmo.mlid.sim;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,24 +39,6 @@ public class Comparateur {
 		}
 	}
 
-	/**
-	 * Méthode qui retourne le nombre de terme en commun entre 2 listes
-	 * 
-	 * @param list1
-	 * @param list2
-	 * @return nombre de terme commun au deux listes
-	 */
-	public int getNbCommonTerm0(List<String> list1, List<String> list2) {
-		int i = 0;
-		for (String crtTerm1 : list1) {
-			for (String crtTerm2 : list2) {
-				if (crtTerm1.equals(crtTerm2)) {
-					i++;
-				}
-			}
-		}
-		return i;
-	}
 
 	/**
 	 * Méthode qui retourne le nombre de terme en commun entre 2 listes
@@ -65,38 +48,11 @@ public class Comparateur {
 	 * @return nombre de terme commun au deux listes
 	 */
 	public int getNbCommonTerm(List<String> list1, List<String> list2) {
-		int sizeList1 = list1.size();
-		int sizeList2 = list2.size();
-		int nbTerm = 0;
-		// si la liste 1 est plus grande que la liste 2 on enlève les éléments
-		// de la liste 2 à la liste 1
-		if (sizeList1 >= sizeList2) {
-			List<String> list3 = new ArrayList<>(list1);
-			// System.out.println("Liste 3 initial");
-			// System.out.println(list3.toString());
-			boolean change = list3.removeAll(list2);
-			int sizeList3 = list3.size();
-			/*
-			 * if (change) { System.out.println("il y a eu du changement");
-			 * System.out.println(list3.toString()); }
-			 */
-			nbTerm = sizeList1 - sizeList3;
-		}
-		// si la liste 2 est plus grande que la liste 1 on enlève les éléments
-		// de la liste 1 à la liste 2
-		else if (sizeList1 <= sizeList2) {
-			List<String> list3 = new ArrayList<>(list2);
-			// System.out.println("Liste 3 initial");
-			// System.out.println(list3.toString());
-			boolean change = list3.removeAll(list1);
-			int sizeList3 = list3.size();
-			/*
-			 * if (change) { System.out.println("il y a eu du changement");
-			 * System.out.println(list3.toString()); }
-			 */
-			nbTerm = sizeList2 - sizeList3;
-		}
-		return nbTerm;
+
+		HashSet<String> s1 = new HashSet();
+		s1.addAll(list1);
+		s1.retainAll(list2);
+		return s1.size();
 	}
 
 	/**
@@ -261,7 +217,7 @@ public class Comparateur {
 	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
 	 * couple de liste ont en commun.
 	 */
-	public void compareDiffLang() {
+	public void compareDiffLang(String lang1, String lang2) {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
 		for (List<String> list1 : listOfList) {
@@ -288,13 +244,13 @@ public class Comparateur {
 			String name2 = names[1];
 
 			if ((name1.substring(name1.length() - 3, name1.length() - 1)
-					.equalsIgnoreCase("en") && !name2.substring(
+					.equalsIgnoreCase(lang1) && !name2.substring(
 					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
-					"en"))
+					lang1))
 					|| (name1.substring(name1.length() - 3, name1.length() - 1)
-							.equalsIgnoreCase("fr") && !name2.substring(
+							.equalsIgnoreCase(lang2) && !name2.substring(
 							name2.length() - 3, name2.length() - 1)
-							.equalsIgnoreCase("fr"))) {
+							.equalsIgnoreCase(lang2))) {
 				reportNbCommonTerm(name1, name2, value, pathReport);
 			}
 
@@ -306,7 +262,7 @@ public class Comparateur {
 	 * dans un fichier dans l'ordre décroissant le nombre de terme que chaque
 	 * couple de liste ont en commun sans doublon.
 	 */
-	public void compareDiffLangU() {
+	public void compareDiffLangU(String lang1, String lang2) {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
 		Couples couplesName = new Couples();
@@ -338,13 +294,13 @@ public class Comparateur {
 			String name2 = names[1];
 
 			if ((name1.substring(name1.length() - 3, name1.length() - 1)
-					.equalsIgnoreCase("en") && !name2.substring(
+					.equalsIgnoreCase(lang1) && !name2.substring(
 					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
-					"en"))
+					lang1))
 					|| (name1.substring(name1.length() - 3, name1.length() - 1)
-							.equalsIgnoreCase("fr") && !name2.substring(
+							.equalsIgnoreCase(lang2) && !name2.substring(
 							name2.length() - 3, name2.length() - 1)
-							.equalsIgnoreCase("fr"))) {
+							.equalsIgnoreCase(lang2))) {
 				reportNbCommonTerm(name1, name2, value, pathReport);
 			}
 
