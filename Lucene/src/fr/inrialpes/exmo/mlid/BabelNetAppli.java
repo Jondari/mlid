@@ -133,6 +133,10 @@ public class BabelNetAppli {
 
 			i++;
 		}
+
+		// Copie de la HashMap dans le fichier HashMapID.txt
+		FileUtil.writeText(dirReport + separator + "HashMapID.txt",
+				BabelNetService.mapId, true);
 	}
 
 }

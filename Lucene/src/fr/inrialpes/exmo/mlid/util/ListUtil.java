@@ -69,7 +69,7 @@ public class ListUtil {
 		for (int indice : listIndice) {
 			FileUtil.writeText(reportPath, listOriginal.get(indice) + " ", true);
 			// System.out.println(listOriginal.get(indice));
-			FileUtil.writeText(reportPath, "\n\r", true);
+			FileUtil.writeText(reportPath, "\r", true);
 		}
 	}
 

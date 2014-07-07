@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class FileUtil {
@@ -74,7 +76,7 @@ public class FileUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * Méthode qui permet d'écrire le contenu d'une chaîne de charactère dans un
 	 * fichier.
@@ -84,9 +86,11 @@ public class FileUtil {
 	 * @param text
 	 *            chaine de caractère qui sera écrite dans le fichier
 	 * @param nonOverWrite
-	 * 			  booléen valant vrai s'il l'on ne souhaite pas écraser le contenu présent dans le fichier faux sinon
+	 *            booléen valant vrai s'il l'on ne souhaite pas écraser le
+	 *            contenu présent dans le fichier faux sinon
 	 */
-	public static void writeText(String filePath, String text, boolean nonOverWrite) {
+	public static void writeText(String filePath, String text,
+			boolean nonOverWrite) {
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(filePath, nonOverWrite);
@@ -174,7 +178,8 @@ public class FileUtil {
 	 *            booléen valant vrai s'il l'on souhaite afficher un mot par
 	 *            ligne
 	 * @param nonOverWrite
-	 * 			  booléen valant vrai s'il l'on ne souhaite pas écraser le contenu présent dans le fichier faux sinon
+	 *            booléen valant vrai s'il l'on ne souhaite pas écraser le
+	 *            contenu présent dans le fichier faux sinon
 	 */
 	public static void writeText(String filePath, List<String> listText,
 			boolean token, boolean nonOverWrite) {
@@ -276,6 +281,78 @@ public class FileUtil {
 		}
 		// System.out.println(listOfText.toString());
 		return listOfText;
+	}
+
+	/**
+	 * Méthode qui permet d'écrire le contenu d'une Map dans un fichier.
+	 * 
+	 * @param filePath
+	 *            chemin vers le fichier sur lequel on souhaite écrire
+	 * @param listText
+	 *            liste des chaines de caractères qui sera écrite dans le
+	 *            fichier
+	 * @param token
+	 *            booléen valant vrai s'il l'on souhaite afficher un mot par
+	 *            ligne
+	 */
+	public static void writeText(String filePath, Map<String, String> mapText,
+			boolean token) {
+
+		Map<String, String> mapTemp = MapUtil.sortByValue(mapText);
+		FileWriter writer = null;
+		if (token) {
+			try {
+				writer = new FileWriter(filePath, false);
+
+				Iterator iterator = mapTemp.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) iterator.next();
+					String key = (String) entry.getKey();
+					String value = (String) entry.getValue();
+
+					String text = key + " = " + value;
+
+					writer.write(text, 0, text.length());
+					writer.write("\r\n");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			try {
+				writer = new FileWriter(filePath, false);
+				Iterator iterator = mapTemp.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) iterator.next();
+					String key = (String) entry.getKey();
+					String value = (String) entry.getValue();
+
+					String text = key + " = " + value;
+					writer.write(text, 0, text.length());
+					writer.write(" ");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 }

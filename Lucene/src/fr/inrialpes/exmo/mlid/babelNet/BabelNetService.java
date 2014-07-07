@@ -11,7 +11,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class BabelNetService {
@@ -27,9 +29,11 @@ public class BabelNetService {
 	private static String identifier = "bn:";
 
 	/**
-	 * @deprecated
+	 * 
 	 */
 	private static String noResult = "No result found";
+
+	public static Map<String, String> mapId = new HashMap<String, String>();
 
 	/**
 	 * @deprecated
@@ -52,19 +56,13 @@ public class BabelNetService {
 		try {
 			List<String> listId = new ArrayList<String>();
 			Language langage = null;
-			if (lang.equalsIgnoreCase("fr")) {
-				langage = Language.FR;
-			} else if (lang.equalsIgnoreCase("en")) {
-				langage = Language.EN;
-
-			} else if (lang.equalsIgnoreCase("zh")) {
-				langage = Language.ZH;
-			} else if (lang.equalsIgnoreCase("ru")) {
-				langage = Language.RU;
-			} else {
-				System.out.println("Langue non reconnue");
-				return null;
+			try {
+				langage = Language.valueOf(lang.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				System.err.println("Langue non reconnue");
+				e.printStackTrace();
 			}
+
 			List<BabelSynset> synsets = bn.getSynsets(langage, word);
 			for (BabelSynset synset : synsets) {
 				listId.add(synset.getId());
@@ -110,8 +108,11 @@ public class BabelNetService {
 			String lang) {
 		List<String> listBabelNet = new ArrayList<>();
 		for (String term : listTerm) {
-			String tempId = BabelNetService.getId(term, lang);
-			listBabelNet.add(tempId);
+			if (!mapId.containsKey(term)) {
+				String tempId = BabelNetService.getId(term, lang);
+				mapId.put(term, tempId);
+			}
+			listBabelNet.add(mapId.get(term));
 		}
 		return listBabelNet;
 	}
