@@ -255,7 +255,7 @@ public class MainComparateur {
 
 			// écriture dans un fichier des termes n'ayant pas d'id babelnet
 			ListUtil.reportElementNotFound(listOriginal, listIdBabel1,
-					pathReport.substring(0, pathReport.length() - 4) + "_log_"
+					pathReport.substring(0, pathReport.length() - 4)
 							+ NameComp1.get(i) + "(en).txt");
 
 			// suppression de ses termes de la liste
@@ -300,7 +300,7 @@ public class MainComparateur {
 		testComp.compareOrderedDescU();
 
 		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt" );
-		testComp.compareDiffLangU();
+		testComp.compareDiffLangU("en", "fr");
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class MainComparateur {
 		testComp.compareOrderedDescU();
 		
 		testComp.setPathReport(pathReport.substring(0, pathReport.length()-4) + "2.txt");
-		testComp.compareDiffLangU();
+		testComp.compareDiffLangU("en", "fr");
 	}
 
 }
