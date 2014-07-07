@@ -11,8 +11,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import fr.inrialpes.exmo.mlid.babelNet.BabelNetService;
-import fr.inrialpes.exmo.mlid.preprocess.LowerCase;
-import fr.inrialpes.exmo.mlid.preprocess.StopWord;
+import fr.inrialpes.exmo.mlid.preprocess.PreprocessFilter;
+import fr.inrialpes.exmo.mlid.preprocess.Tokenization;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
 import fr.inrialpes.exmo.mlid.util.ListUtil;
 
@@ -20,25 +20,31 @@ public class BabelNetAppli {
 
 	public static void main(String[] args) {
 
-		/** Classe qui regroupe toute les options définies */
+		// Classe qui regroupe toute les options définies
 		Options option = new Options();
 
-		/** fichier à traiter */
-		Option pathFile = new Option("f1", true, "fichier source");
+		// Chemin vers le dossier contenant les fichiers à traiter
+		Option d1 = new Option("d1", true, "dossier des fichiers sources");
 		// Oblige le paramètre d'être présent lors de l'exécution
-		pathFile.setRequired(true);
+		d1.setRequired(true);
 
-		/** fichier résultat */
-		Option pathDest = new Option("f2", true, "fichier résultat");
+		// Chemin vers le dossier contenant les fichiers résultat
+		Option d2 = new Option("d2", true, "dossier des fichiers résultats");
 		// Oblige le paramètre d'être présent lors de l'exécution
-		pathDest.setRequired(true);
+		d2.setRequired(true);
 
-		/** langue du fichier à traiter */
+		// Chemin vers le dossier contenant les fichiers résultat
+		Option dr = new Option("dr", true, "dossier des fichiers rapports");
+		// Oblige le paramètre d'être présent lors de l'exécution
+		dr.setRequired(true);
+
+		// langue des fichier à traiter
 		Option lang = new Option("lang", true, "langue du fichier à traiter");
 
 		// ajout des options définies
-		option.addOption(pathFile);
-		option.addOption(pathDest);
+		option.addOption(d1);
+		option.addOption(d2);
+		option.addOption(dr);
 		option.addOption(lang);
 
 		if (args.length == 0) {
@@ -52,11 +58,12 @@ public class BabelNetAppli {
 
 				CommandLine cmd = parser.parse(option, args);
 
-				String pathFileS = cmd.getOptionValue("f1");
-				String pathDestS = cmd.getOptionValue("f2");
+				String pathDirFiles = cmd.getOptionValue("d1");
+				String pathDirDest = cmd.getOptionValue("d2");
+				String pathDirReport = cmd.getOptionValue("dr");
 				String langS = cmd.getOptionValue("lang");
 
-				getBabelID(pathFileS, pathDestS, langS);
+				getBabelID(pathDirFiles, pathDirDest, pathDirReport, langS);
 
 			} catch (ParseException e) {
 				System.err.println("Parsing failed. Exception is = "
@@ -69,65 +76,63 @@ public class BabelNetAppli {
 	}
 
 	/**
-	 * Méthode qui retourne un fichier f2 contenant les id babelnet des mots du
-	 * fichier f1
+	 * Méthode qui écrit dans le dossier spécifié les fichiers avec les ID
+	 * balbelNet correspondant au fichier du dossier source. Les mots n'ayant
+	 * pas obtenu d'identifiant babelNet sont rapportés dans le dossier rapport
+	 * donné en paramètre.
 	 * 
-	 * @param f1
-	 *            fichier à traiter
-	 * @param f2
-	 *            fichier résultat
-	 * @param langu
-	 *            langue du fichier à traiter
+	 * @param dirSource
+	 *            dossier contenant les fichier à traiter
+	 * @param dirDest
+	 *            dossier contenant les fichiers avec ID babelnet
+	 * @param dirReport
+	 *            dossier contenant les fichiers rapportant les mots n'ayant pas
+	 *            obtenu d'ID babelNet
+	 * @param lang
+	 *            langue des fichier à traiter
 	 */
-	public static void getBabelID(String f1, String f2, String langu) {
+	public static void getBabelID(String dirSource, String dirDest,
+			String dirReport, String lang) {
 		String noResult = "No result found";
 
-		/** fichier contenant les terme n'ayant pas obtenu d'id babelnet */
-		String pathDirectoryReport = null;
+		String separator = System.getProperty("file.separator");
+		System.out.println(separator);
 
-		/** fichier à traiter */
-		String pathFileS = f1;
-		/** fichier résultat */
-		String pathDestS = f2;
-		/** langue du fichier à traiter */
-		String langS = langu;
-		if (pathDestS.contains("/")) {
-			pathDirectoryReport = pathDestS.substring(0,
-					pathDestS.lastIndexOf("/"))
-					+ "/report.txt";
-		} else {
-			pathDirectoryReport = pathDestS.substring(0,
-					pathDestS.lastIndexOf("\\"))
-					+ "\\report.txt";
+		List<String> testComp1 = FileUtil.getListOfText(dirSource);
+
+		List<String> NameComp1 = FileUtil.getListNameFile(dirSource);
+
+		// on récupère pour chaque document leur liste de terme, à partir de
+		// cette liste de terme
+		// on récupère la liste d'id babelenet correspondante
+		int i = 0;
+		for (String text : testComp1) {
+			// récupération de la liste de terme
+			PreprocessFilter token = new Tokenization(text);
+			List<String> listOriginal = token.getList();
+
+			// récupération des id correspondant
+			List<String> listIdBabel = BabelNetService.getListBabelNetId(
+					listOriginal, lang);
+			// System.out.println(listIdBabel1.toString());
+
+			// écriture dans un fichier des termes n'ayant pas d'id babelnet
+			ListUtil.reportElementNotFound(listOriginal, listIdBabel, dirReport
+					+ separator + "reportNotFound_" + NameComp1.get(i));
+
+			// suppression de ses termes de la liste
+			ListUtil.filterTerm(listIdBabel, noResult);
+
+			// écriture de la liste d'ID dans un fichier
+			FileUtil.writeText(
+					dirDest
+							+ separator
+							+ NameComp1.get(i).substring(0,
+									NameComp1.get(i).length() - 4) + "ID.txt",
+					listIdBabel, true);
+
+			i++;
 		}
-
-		// on récupère la chaine de caractère */
-		String text = FileUtil.getText(pathFileS);
-		System.out.println(text);
-
-		// on traite la chaine de charactère
-		List<String> listTerm = new StopWord(new LowerCase(text), langS)
-				.getList();
-		System.out.println(listTerm.toString());
-		// System.out.println(listTerm.toString());
-		listTerm = ListUtil.removeDuplicate(listTerm);
-		System.out.println(listTerm.toString());
-		// System.out.println("*** Après suppression doublon ***");
-		// System.out.println(listTerm.toString());
-		// récupère la liste d'id babelnet
-		List<String> idText = BabelNetService
-				.getListBabelNetId(listTerm, langS);
-		System.out.println(idText.toString());
-
-		// on rapporte dans un autre fichier les termes n'ayant pas eu
-		// d'id
-		ListUtil.reportElementNotFound(listTerm, idText, pathDirectoryReport);
-
-		// suppression de ses termes de la liste
-		ListUtil.filterTerm(idText, noResult);
-
-		// on écrit la liste dans un autre fichier text
-		FileUtil.writeText(pathDestS, idText, true);
 	}
 
 }
