@@ -514,6 +514,22 @@ public class Comparateur {
 								mapCommonTerms.put(commonTerms, nbTerm);
 							}
 						}
+						// s'ils n'ont pas de terme en communs
+						/*else {
+							if (!listCouples.exist(i, j)) {
+								Couple<Integer> crtIndice = new Couple<Integer>(
+										i, j);
+								listCouples.add(crtIndice);
+								nbTerm = 0;
+							}
+
+							if (!couplesName.exist(name1, name2)) {
+								Couple<String> crtCpl = new Couple<String>(
+										name1, name2);
+								couplesName.add(crtCpl);
+								map.put(key, nbTerm);
+							}
+						}*/
 					}
 					j++;
 				}
