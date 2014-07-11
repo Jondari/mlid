@@ -11,7 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import fr.inrialpes.exmo.mlid.babelNet.BabelNetService;
 import fr.inrialpes.exmo.mlid.preprocess.PreprocessFilter;
 import fr.inrialpes.exmo.mlid.preprocess.Tokenization;
 import fr.inrialpes.exmo.mlid.sim.Comparateur;
@@ -19,11 +18,6 @@ import fr.inrialpes.exmo.mlid.util.FileUtil;
 import fr.inrialpes.exmo.mlid.util.ListUtil;
 
 public class ComputeMax {
-
-	/**
-	 * Variable indiquant que le terme ne dispose pas d'id babelnet
-	 */
-	private static String noResult = "No result found";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -90,7 +84,12 @@ public class ComputeMax {
 				langD2S = cmds.getOptionValue("langD2");
 
 				// on lance la comparaison
-				compute(pathDirectoryLang1, pathDirectoryLang2, langD1S,
+				// Pour utiliser avec le première id babelnet
+				//compute(pathDirectoryLang1, pathDirectoryLang2, langD1S,
+						//langD2S, pathDirectoryReport);
+				
+				// Pour utiliser avec la liste d'id babelnet
+				computeL(pathDirectoryLang1, pathDirectoryLang2, langD1S,
 						langD2S, pathDirectoryReport);
 
 			} catch (ParseException e) {
@@ -174,13 +173,99 @@ public class ComputeMax {
 		int i = 0;
 		for (String text : list) {
 			// récupération de la liste de terme
-			PreprocessFilter token = new Tokenization(text);
+			PreprocessFilter token = new Tokenization(text,lang);
 			List<String> listBabelId = token.getList();
 
 			// ajout du nom de fichier en tête de liste
 			listBabelId.set(0,
 					nameList.get(i).substring(0, nameList.get(i).length() - 4)
 							+ "(" + lang + ")");
+
+			// ajout de l'élément à la liste de liste
+			listOfList.add(listBabelId);
+
+			i++;
+		}
+	}
+
+	/**
+	 * Méthode qui compare les fichiers presents dans les dossiers d1 avec ceux
+	 * du dossier d2. Les dossier doivent être de langues différentes
+	 * 
+	 * @param d1
+	 *            Chemin vers le premier dossier contenant les fichiers à
+	 *            comparer
+	 * @param d2
+	 *            Chemin vers le second dossier contenant les fichiers à
+	 *            comparer
+	 * @param langD1
+	 *            Langue du dossier 1
+	 * @param langD2
+	 *            Langue du dossier 2
+	 * @param pathReport
+	 *            Chemin vers le fichier de rapport
+	 */
+	public static void computeL(String d1, String d2, String langD1,
+			String langD2, String pathReport) {
+		// on crée une liste qui contient tout les textes des fichiers du
+		// dossier 1
+		List<String> testComp1 = FileUtil.getListOfText(d1);
+
+		// on fait de même pour le dossier 2
+		List<String> testComp2 = FileUtil.getListOfText(d2);
+
+		// on vérifie que chaque dossier contient au moins un fichier
+		if (testComp1.size() < 1 || testComp2.size() < 1) {
+			throw new RuntimeException(
+					"Vos dossiers doivent contenir au moins un fichier! La comparaison n'aura pas lieu.");
+		} else {
+			ArrayList<List<List<String>>> listOfList = new ArrayList<List<List<String>>>();
+
+			// On récupère les noms de fichier du dossier 1
+			List<String> nameFile1 = FileUtil.getListNameFile(d1);
+			// idem pour le dossier 2
+			List<String> nameFile2 = FileUtil.getListNameFile(d2);
+
+			computeProcessL(testComp1, nameFile1, listOfList, langD1);
+
+			computeProcessL(testComp2, nameFile2, listOfList, langD2);
+			
+			//System.out.println("ici " + listOfList.get(0).get(1).get(1));
+
+			// on compare les éléments contenus dans la liste de liste
+			Comparateur testComp = new Comparateur(listOfList);
+			testComp.setPathReport(pathReport);
+			testComp.compareDiffLangU(langD1, langD2, true);
+		}
+	}
+
+	/**
+	 * Méthode qui récupère la liste de mots associée à chacun des textes
+	 * contenus dans la liste. Elle ajoute en tête de liste le nom du fichier du
+	 * fichier correspondant et ajoute les listes de mot à la liste de listes
+	 * entrée en paramètre.
+	 * 
+	 * @param list
+	 *            liste de texte dont on souhaite récupèrer les listes de mot
+	 * @param nameList
+	 *            lste contenant le nom des fichiers dont son issu les textes
+	 * @param listOfList
+	 *            liste qui contiendra les listes de mots
+	 */
+	private static void computeProcessL(List<String> list,
+			List<String> nameList, List<List<List<String>>> listOfList,
+			String lang) {
+		int i = 0;
+		for (String text : list) {
+			// récupération de la liste de terme
+			List<List<String>> listBabelId = ListUtil.separateTextInLists(text);
+			
+			List<String> nameFile = new ArrayList<String>();
+			nameFile.add(nameList.get(i).substring(0,
+					nameList.get(i).length() - 4)
+					+ "(" + lang + ")");
+			// ajout du nom de fichier en tête de liste
+			listBabelId.set(0, nameFile);
 
 			// ajout de l'élément à la liste de liste
 			listOfList.add(listBabelId);
