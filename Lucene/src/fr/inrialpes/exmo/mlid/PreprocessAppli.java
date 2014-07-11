@@ -21,21 +21,13 @@ import fr.inrialpes.exmo.mlid.util.FileUtil;
 /**
  * Classe permettant d'appliquer un ou plusieurs filtres à un document entré en
  * paramètre et d'obtenir le fichier résultat en spécifiant son chemin d'accès.
- * Il est nécessaire de spécifier la langue du document. 
- * Les langues reconnus sont le français, l'anglais et le chinois. 
- * Pour spécifier la langue entré fr, en ou zh. 
- * Pour spécifier le filtre entré : 
- * - Stop pour le StopWord 
- * - Stem pour le Stemming 
- * - Token pour la Tokenization 
- * - Low pour le LowerCase 
- * - NGr pour le NGrams 
- * - Low+Token 
- * - Low+Stop 
- * - Low+Stop+Token
- * - Low+Stop+Stem 
- * - Low+Stop+Stem+Token 
- * - Low+Stop+Stem+NGr
+ * Il est nécessaire de spécifier la langue du document. Les langues reconnus
+ * sont le français, l'anglais et le chinois. Pour spécifier la langue entré fr,
+ * en ou zh. Pour spécifier le filtre entré : - Stop pour le StopWord - Stop-Num
+ * pour le StopWord avec suppression des chaine de caractères numériques - Stem
+ * pour le Stemming - Token pour la Tokenization - Low pour le LowerCase - NGr
+ * pour le NGrams - Low+Token - Low+Stop - Low+Stop+Token - Low+Stop+Stem -
+ * Low+Stop+Stem+Token - Low+Stop+Stem+NGr
  * 
  * @author Giovanni
  * 
@@ -88,22 +80,23 @@ public class PreprocessAppli {
 
 		if (args.length == 0) {
 			System.out
-			.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
+					.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
 			System.out
-			.println( "Vous pouvez modifier les paramètres manuellement!");
-			
-			//on récupère le non du système d'information
+					.println("Vous pouvez modifier les paramètres manuellement!");
+
+			// on récupère le non du système d'information
 			String Os = System.getProperty("os.name");
-			
-			// on établis le chemin vers les dossiers d'exemple en fonction 
+
+			// on établis le chemin vers les dossiers d'exemple en fonction
 			// des séparateurs du système d'exploitation
-			if(Os.contains("Windows") || Os.contains("windows")){
+			if (Os.contains("Windows") || Os.contains("windows")) {
 				dirPath = System.getProperty("user.dir") + "\\src\\example\\Fr";
-				dirPathDest = System.getProperty("user.dir") + "\\src\\example\\Dest";
-			}
-			else {
+				dirPathDest = System.getProperty("user.dir")
+						+ "\\src\\example\\Dest";
+			} else {
 				dirPath = System.getProperty("user.dir") + "/src/example/Fr";
-				dirPathDest = System.getProperty("user.dir") + "/src/example/Dest";
+				dirPathDest = System.getProperty("user.dir")
+						+ "/src/example/Dest";
 			}
 			cmd = "Low+Stop+Stem+NGr";
 			lang = "fr";
@@ -191,6 +184,8 @@ public class PreprocessAppli {
 				filter = new LowerCase(tmpText);
 			} else if (cmd.equalsIgnoreCase("Stop")) {
 				filter = new StopWord(tmpText, lang);
+			} else if (cmd.equalsIgnoreCase("Stop-Num")) {
+				filter = new StopWord(tmpText, lang, true);
 			} else if (cmd.equalsIgnoreCase("Stem")) {
 				filter = new Stemming(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("Token")) {
@@ -198,23 +193,26 @@ public class PreprocessAppli {
 			} else if (cmd.equalsIgnoreCase("NGr")) {
 				filter = new NGrams(tmpText, n);
 			} else if (cmd.equalsIgnoreCase("Low+Token")) {
-				filter = new Tokenization(new LowerCase(tmpText));
+				filter = new Tokenization(new LowerCase(tmpText), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop")) {
 				filter = new StopWord(new LowerCase(tmpText), lang);
+			} else if (cmd.equalsIgnoreCase("Low+Stop-Num")) {
+				filter = new StopWord(new LowerCase(tmpText), lang, true);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Token")) {
 				filter = new Tokenization(new StopWord(new LowerCase(tmpText),
-						lang));
+						lang), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem")) {
 				filter = new Stemming(
 						new StopWord(new LowerCase(tmpText), lang), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+Token")) {
 				filter = new Tokenization(new Stemming(new StopWord(
-						new LowerCase(tmpText), lang), lang));
+						new LowerCase(tmpText), lang), lang), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+NGr")) {
 				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
 						tmpText), lang), lang), n);
 			} else {
-				throw new RuntimeException("Commande non reconnue! Arret du programme!");
+				throw new RuntimeException(
+						"Commande non reconnue! Arret du programme!");
 			}
 
 			// On écrit la nouvelle chaîne de caractère dans le fichier
