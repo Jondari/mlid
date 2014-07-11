@@ -187,21 +187,22 @@ public class PreprocessAppli {
 			} else if (cmd.equalsIgnoreCase("Stop-Num")) {
 				filter = new StopWord(tmpText, lang, true);
 			} else if (cmd.equalsIgnoreCase("Stop+NGr")) {
-				filter = new NGrams(new StopWord(tmpText, lang), n);
+				filter = new NGrams(new StopWord(tmpText, lang), lang, n);
 			} else if (cmd.equalsIgnoreCase("Stop-Num+NGr")) {
-				filter = new NGrams(new StopWord(tmpText, lang, true), n);
+				filter = new NGrams(new StopWord(tmpText, lang, true), lang, n);
 			} else if (cmd.equalsIgnoreCase("Stop+NGr-NoSpace")) {
-				filter = new NGrams(new StopWord(tmpText, lang), n, false);
+				filter = new NGrams(new StopWord(tmpText, lang), lang, n, false);
 			} else if (cmd.equalsIgnoreCase("Stop-Num+NGr-NoSpace")) {
-				filter = new NGrams(new StopWord(tmpText, lang, true), n, false);
+				filter = new NGrams(new StopWord(tmpText, lang, true), lang, n,
+						false);
 			} else if (cmd.equalsIgnoreCase("Stem")) {
 				filter = new Stemming(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("Token")) {
 				filter = new Tokenization(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("NGr")) {
-				filter = new NGrams(tmpText, n);
+				filter = new NGrams(tmpText, lang, n);
 			} else if (cmd.equalsIgnoreCase("NGr-NoSpace")) {
-				filter = new NGrams(tmpText, n, false);
+				filter = new NGrams(tmpText, lang, n, false);
 			} else if (cmd.equalsIgnoreCase("Low+Token")) {
 				filter = new Tokenization(new LowerCase(tmpText), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop")) {
@@ -228,10 +229,10 @@ public class PreprocessAppli {
 						new LowerCase(tmpText), lang, true), lang), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+NGr")) {
 				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
-						tmpText), lang), lang), n);
+						tmpText), lang), lang), lang, n);
 			} else if (cmd.equalsIgnoreCase("Low+Stop-Num+Stem+NGr")) {
 				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
-						tmpText), lang, true), lang), n);
+						tmpText), lang, true), lang), lang, n);
 			} else {
 				throw new RuntimeException(
 						"Commande non reconnue! Arret du programme!");
