@@ -1,16 +1,28 @@
 package fr.inrialpes.exmo.mlid.preprocess;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.cn.ChineseAnalyzer;
+import org.apache.lucene.analysis.cn.ChineseTokenizer;
 
 public class Tokenization extends PreprocessFilter {
 
 	List<String> crtList = null;
 
-	public Tokenization(PreprocessFilter crtfilter) {
+	public Tokenization(PreprocessFilter crtfilter, String lang) {
 		this.crtString = crtfilter.getCrtString();
-		String newString = process(crtString);
+		if (lang.equalsIgnoreCase("zh")) {
+			process(crtString, lang);
+		} else {
+			this.crtString = process(crtString);
+		}
 		// crtfilter.setCrtString(newString);
 	}
 
@@ -47,6 +59,51 @@ public class Tokenization extends PreprocessFilter {
 		this.crtList = wordList0;
 		this.crtString = wordList;
 		return wordList;
+	}
+
+	public void process(String text, String lang) {
+		if (lang.equalsIgnoreCase("zh")) {
+			tokenizeString(new ChineseAnalyzer(), text);
+		} else {
+			process(text);
+		}
+
+	}
+
+	/**
+	 * Méthode qui effectue une tokenisation sur la chaîne de caractère entré en
+	 * paramètre en fonction de l'analyzer spécifé
+	 * 
+	 * @param analyzer
+	 *            analyzer de la langue du texte
+	 * @param string
+	 *            texte à tokenizer
+	 * @return
+	 */
+	private List<String> tokenizeString(Analyzer analyzer, String string) {
+		List<String> wordList0 = new ArrayList<String>();
+		String wordList = "";
+		String token = "";
+		try {
+			TokenStream stream = analyzer.tokenStream(null, new StringReader(
+					string));
+			stream.reset();
+			int i = 0;
+			while (stream.incrementToken()) {
+				wordList0.add(stream.toString().substring(2, 3));
+				if (i == 0) {
+					wordList = wordList + token;
+					i++;
+				} else {
+					wordList = wordList + " " + token;
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		this.crtList = wordList0;
+		this.crtString = wordList;
+		return wordList0;
 	}
 
 	/**
