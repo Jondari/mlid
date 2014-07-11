@@ -24,7 +24,7 @@ public class FileUtil {
 		Scanner scanner;
 		try {
 			scanner = new Scanner(new File(filePath));
-			String text = " ";
+			String text = "";
 
 			// On boucle sur chaque champ detecté
 			int i = 0;
