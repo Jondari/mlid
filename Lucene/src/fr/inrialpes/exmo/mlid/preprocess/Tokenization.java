@@ -26,9 +26,13 @@ public class Tokenization extends PreprocessFilter {
 		// crtfilter.setCrtString(newString);
 	}
 
-	public Tokenization(String text) {
+	public Tokenization(String text, String lang) {
 		this.crtString = text;
-		this.crtString = this.process(this.crtString);
+		if (lang.equalsIgnoreCase("zh")) {
+			process(crtString, lang);
+		} else {
+			this.crtString = this.process(crtString);
+		}
 	}
 
 	public Tokenization() {
@@ -90,7 +94,8 @@ public class Tokenization extends PreprocessFilter {
 			stream.reset();
 			int i = 0;
 			while (stream.incrementToken()) {
-				wordList0.add(stream.toString().substring(2, 3));
+				token = stream.toString().substring(2, 3);
+				wordList0.add(token);
 				if (i == 0) {
 					wordList = wordList + token;
 					i++;
