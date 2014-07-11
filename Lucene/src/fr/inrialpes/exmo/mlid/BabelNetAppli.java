@@ -63,7 +63,11 @@ public class BabelNetAppli {
 				String pathDirReport = cmd.getOptionValue("dr");
 				String langS = cmd.getOptionValue("lang");
 
-				getBabelID(pathDirFiles, pathDirDest, pathDirReport, langS);
+				//Pour utiliser le premier id babelnet
+				//getBabelID(pathDirFiles, pathDirDest, pathDirReport, langS);
+				
+				//Pour utiliser la liste des id babelnet
+				getBabelIDs(pathDirFiles, pathDirDest, pathDirReport, langS);
 
 			} catch (ParseException e) {
 				System.err.println("Parsing failed. Exception is = "
@@ -79,7 +83,75 @@ public class BabelNetAppli {
 	 * Méthode qui écrit dans le dossier spécifié les fichiers avec les ID
 	 * balbelNet correspondant au fichier du dossier source. Les mots n'ayant
 	 * pas obtenu d'identifiant babelNet sont rapportés dans le dossier rapport
-	 * donné en paramètre.
+	 * donné en paramètre. On travaille avec la liste des ID babelNet des
+	 * termes.
+	 * 
+	 * @param dirSource
+	 *            dossier contenant les fichier à traiter
+	 * @param dirDest
+	 *            dossier contenant les fichiers avec ID babelnet
+	 * @param dirReport
+	 *            dossier contenant les fichiers rapportant les mots n'ayant pas
+	 *            obtenu d'ID babelNet
+	 * @param lang
+	 *            langue des fichier à traiter
+	 */
+	public static void getBabelIDs(String dirSource, String dirDest,
+			String dirReport, String lang) {
+		String noResult = "No result found";
+
+		String separator = System.getProperty("file.separator");
+
+		List<String> testComp1 = FileUtil.getListOfText(dirSource);
+
+		List<String> NameComp1 = FileUtil.getListNameFile(dirSource);
+
+		// on récupère pour chaque document leur liste de terme, à partir de
+		// cette liste de terme
+		// on récupère la liste d'id babelenet correspondante
+		int i = 0;
+		for (String text : testComp1) {
+			// récupération de la liste de terme
+			PreprocessFilter token = new Tokenization(text,lang);
+			List<String> listOriginal = token.getList();
+
+			// récupération des id correspondant
+			// pour travailler avec la liste des identifiants
+			List<List<String>> listIdBabel = BabelNetService
+					.getListBabelNetIds(listOriginal, lang);
+			// System.out.println(listIdBabel1.toString());
+
+			// écriture dans un fichier des termes n'ayant pas d'id babelnet
+			ListUtil.reportElementNotFoundL(
+					listOriginal,
+					listIdBabel,
+					dirReport + separator + "reportNotFound_"
+							+ NameComp1.get(i));
+
+			// suppression de ses termes de la liste
+			ListUtil.filterEmptyList(listIdBabel, noResult);
+
+			// écriture de la liste d'ID dans un fichier
+			FileUtil.writeTextL(
+					dirDest
+							+ separator
+							+ NameComp1.get(i).substring(0,
+									NameComp1.get(i).length() - 4) + "ID.txt",
+					listIdBabel, true);
+
+			i++;
+		}
+
+		// Copie de la HashMap dans le fichier HashMapID.txt
+		FileUtil.writeTextL(dirReport + separator + "HashMapID.txt",
+				BabelNetService.mapIds, true);
+	}
+
+	/**
+	 * Méthode qui écrit dans le dossier spécifié les fichiers avec les ID
+	 * balbelNet correspondant au fichier du dossier source. Les mots n'ayant
+	 * pas obtenu d'identifiant babelNet sont rapportés dans le dossier rapport
+	 * donné en paramètre. On travail avec le premier ID babelNet des termes.
 	 * 
 	 * @param dirSource
 	 *            dossier contenant les fichier à traiter
@@ -108,15 +180,11 @@ public class BabelNetAppli {
 		int i = 0;
 		for (String text : testComp1) {
 			// récupération de la liste de terme
-			PreprocessFilter token = new Tokenization(text);
+			PreprocessFilter token = new Tokenization(text,lang);
 			List<String> listOriginal = token.getList();
 
 			// récupération des id correspondant
-			
-			/*
-			 * Pour travailler avec un seul identifiant
-			 * 
-			 * List<String> listIdBabel = BabelNetService.getListBabelNetId(
+			List<String> listIdBabel = BabelNetService.getListBabelNetId(
 					listOriginal, lang);
 			// System.out.println(listIdBabel1.toString());
 
@@ -134,34 +202,12 @@ public class BabelNetAppli {
 							+ NameComp1.get(i).substring(0,
 									NameComp1.get(i).length() - 4) + "ID.txt",
 					listIdBabel, true);
-			*/
 
-			// pour travailler avec la liste des identifiants
-			List<List<String>> listIdBabel = BabelNetService.getListBabelNetIds(
-			listOriginal, lang);
-			// System.out.println(listIdBabel1.toString());
-
-			// écriture dans un fichier des termes n'ayant pas d'id babelnet
-			ListUtil.reportElementNotFoundL(listOriginal, listIdBabel, dirReport
-			+ separator + "reportNotFound_" + NameComp1.get(i));
-
-			// suppression de ses termes de la liste
-			ListUtil.filterEmptyList(listIdBabel, noResult);
-
-			// écriture de la liste d'ID dans un fichier
-			FileUtil.writeTextL(
-			dirDest
-					+ separator
-					+ NameComp1.get(i).substring(0,
-							NameComp1.get(i).length() - 4) + "ID.txt",
-			listIdBabel, true);
-			
 			i++;
 		}
 
 		// Copie de la HashMap dans le fichier HashMapID.txt
-		FileUtil.writeTextL(dirReport + separator + "HashMapID.txt",
-				BabelNetService.mapIds, true);
+		FileUtil.writeText(dirReport + separator + "HashMapID.txt",
+				BabelNetService.mapId, true);
 	}
-
 }
