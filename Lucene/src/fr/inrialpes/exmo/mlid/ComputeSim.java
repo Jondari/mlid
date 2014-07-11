@@ -1,6 +1,7 @@
 package fr.inrialpes.exmo.mlid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -13,6 +14,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.inrialpes.exmo.mlid.preprocess.Tokenization;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
+import fr.inrialpes.exmo.mlid.util.ListUtil;
 import fr.inrialpes.exmo.ontosim.vector.CosineVM;
 import fr.inrialpes.exmo.ontosim.vector.JaccardVM;
 import fr.inrialpes.exmo.ontosim.vector.VectorMeasure;
@@ -58,20 +60,21 @@ public class ComputeSim {
 
 		if (args.length == 0) {
 			System.out
-			.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
+					.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
 			System.out
-			.println( "Vous pouvez modifier les paramètres manuellement!");
-			
-			//on récupère le non du système d'information
+					.println("Vous pouvez modifier les paramètres manuellement!");
+
+			// on récupère le non du système d'information
 			String Os = System.getProperty("os.name");
-			
-			// on établis le chemin vers les dossiers d'exemple en fonction 
+
+			// on établis le chemin vers les dossiers d'exemple en fonction
 			// des séparateurs du système d'exploitation
-			if(Os.contains("Windows") || Os.contains("windows")){
-				d1S = System.getProperty("user.dir") + "\\src\\example\\Fr\\mod";
-				d2S = System.getProperty("user.dir") + "\\src\\example\\EN\\mod";
-			}
-			else {
+			if (Os.contains("Windows") || Os.contains("windows")) {
+				d1S = System.getProperty("user.dir")
+						+ "\\src\\example\\Fr\\mod";
+				d2S = System.getProperty("user.dir")
+						+ "\\src\\example\\EN\\mod";
+			} else {
 				d1S = System.getProperty("user.dir") + "/src/example/Fr/mod";
 				d2S = System.getProperty("user.dir") + "/src/example/En/mod";
 			}
@@ -98,11 +101,17 @@ public class ComputeSim {
 				formatter.printHelp("ComputeSim", option);
 			}
 		}
-		compute(d1S, d2S, vectorTypeS, mesureS);
+		// Utilisation d'un seul id babelnet
+		// compute(d1S, d2S, vectorTypeS, mesureS);
+
+		// Utilisation d'un ensemble d'id babelnet
+		computeL(d1S, d2S, vectorTypeS, mesureS);
 	}
 
 	/**
-	 * méthode qui genere la matrice des similarités des fichiers presents dans les dossiers d1 et d2
+	 * méthode qui genere la matrice des similarités des fichiers presents dans
+	 * les dossiers d1 et d2
+	 * 
 	 * @param d1
 	 *            dossier contenant les fichiers babelnet d'une langue
 	 * @param d2
@@ -161,19 +170,112 @@ public class ComputeSim {
 				VectorMeasure sim = null;
 				if (mesureS.equalsIgnoreCase("Cos")) {
 					sim = new CosineVM();
+					toWrite = toWrite
+							+ ((CosineVM) sim).getSim(vector1, vector2) + ";\t";
 				} else if (mesureS.equalsIgnoreCase("Jacc")) {
 					sim = new JaccardVM();
+					toWrite = toWrite
+							+ ((JaccardVM) sim).getSim(vector1, vector2)
+							+ ";\t";
 				} else {
 					System.out.println("La mesure utilisé est incorrect");
 					System.exit(-1);
 				}
-				toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
+				// toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
 			}
 			// on écrit le nom du document courant du dossier
 			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
 					+ "; ", true);
 			// on écrit la ligne de matrice
 			FileUtil.writeText(d1S + "/matrice.csv", toWrite + "\n", true);
+			i++;
+
+		}
+	}
+
+	/**
+	 * méthode qui genere la matrice des similarités des fichiers presents dans
+	 * les dossiers d1 et d2 (utilise les listes d'ID babelNet )
+	 * 
+	 * @param d1
+	 *            dossier contenant les fichiers babelnet d'une langue
+	 * @param d2
+	 *            dossier contenant les fichiers babelnet d'une autre langue
+	 * @param vectorType
+	 *            Type de vecteur à utiliser
+	 * @param mesure
+	 *            Mesure à utiliser
+	 */
+	public static void computeL(String d1, String d2, String vectorType,
+			String mesure) {
+		// dossier contenant les fichiers babelnet d'une langue
+		String d1S = d1;
+
+		// dossier contenant les fichiers babelnet d'une langue
+		String d2S = d2;
+
+		// Type de vecteur à utiliser
+		// TF ou TFIDF
+		String vectorTypeS = vectorType;
+
+		// Mesure à utiliser
+		// Cos pour Cosine
+		// Jacc pour Jaccard
+		String mesureS = mesure;
+
+		// Collection qui contiendra l'ensemble des documents
+		DocumentCollection docCollection = new DocumentCollection();
+		System.out.println("les termes sont " + docCollection.getTerms());
+
+		// liste des documents du dossier 1
+		List<Document> docList1 = fillDocCollectionL(d1S, docCollection);
+
+		// liste des documents du dossier 2
+		List<Document> docList2 = fillDocCollectionL(d2S, docCollection);
+		System.out.println("les termes sont " + docCollection.getTerms());
+
+		// liste des vecteurs des documents du dossier 1
+		List<double[]> listVect1 = getListVector(vectorTypeS, docList1,
+				docCollection);
+
+		// liste des vecteurs des documents du dossier 2
+		List<double[]> listVect2 = getListVector(vectorTypeS, docList2,
+				docCollection);
+
+		// création de la matrice et écriture dans un fichier
+		String toWrite = getName(d1S);
+		List<String> nameDoc2 = FileUtil.getListNameFile(d2S);
+
+		// on trie la liste
+		Collections.sort(nameDoc2);
+
+		int i = 0;
+		// on récupère les noms des doc1 du dossier 1 et on les écrit dans le
+		// fichier csv
+		FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
+		for (double[] vector1 : listVect1) {
+			toWrite = "";
+			for (double[] vector2 : listVect2) {
+				VectorMeasure sim = null;
+				if (mesureS.equalsIgnoreCase("Cos")) {
+					sim = new CosineVM();
+					toWrite = toWrite
+							+ ((CosineVM) sim).getSim(vector1, vector2) + "\t";
+				} else if (mesureS.equalsIgnoreCase("Jacc")) {
+					sim = new JaccardVM();
+					toWrite = toWrite
+							+ ((JaccardVM) sim).getSim(vector1, vector2) + "\t";
+				} else {
+					System.out.println("La mesure utilisé est incorrect");
+					System.exit(-1);
+				}
+				// toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
+			}
+			// on écrit le nom du document courant du dossier
+			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
+					+ " ", true);
+			// on écrit la ligne de matrice
+			FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
 			i++;
 
 		}
@@ -194,28 +296,83 @@ public class ComputeSim {
 		List<String> listOfFile = FileUtil.getListNameFile(pathDirectory);
 
 		List<Document> listOfDoc = new ArrayList<Document>();
+		// Pour chaque nom de fichier
 		for (String namefileTemp : listOfFile) {
-			String tmpText;
 			String fileDestTemp;
-			// on vérifie la façon dont a été ecrit le chemin afin de le
-			// complété de façon adéquate
-			if (pathDirectory.contains("/")) {
-				// On récupère le texte du fichier
-				tmpText = FileUtil.getText(pathDirectory + "/" + namefileTemp);
-				// On définie le fichier résultat
-				fileDestTemp = pathDirectory + "/" + namefileTemp;
-			} else {
-				tmpText = FileUtil.getText(pathDirectory + "\\" + namefileTemp);
-				// System.out.println(tmpText);
-				fileDestTemp = pathDirectory + "\\" + namefileTemp;
-			}
+
+			// on récupère le séparateur de fichiers utilisé par le système hôte
+			String separator = System.getProperty("file.separator");
+
+			// On définie le fichier résultat
+			fileDestTemp = pathDirectory + separator + namefileTemp;
+
 			// on récupère la liste de termes
 			List<String> tempBabel = new Tokenization(
-					FileUtil.getText(fileDestTemp)).getCrtList();
+					FileUtil.getText(fileDestTemp), "en").getCrtList();
 			// on crée un document
 			Document docTemp = new Document(namefileTemp);
+
 			// on y ajoute la liste de terme
 			docTemp.addOccTerms(tempBabel);
+
+			// on ajoute le document à la collection de document
+			docCollection.add(docTemp);
+
+			// on ajoute le document à la liste de document
+			listOfDoc.add(docTemp);
+		}
+		return listOfDoc;
+	}
+
+	/**
+	 * Méthode qui à partir d'un chemin vers un répertoire va remplir la
+	 * collection de document en paramètre avec des document correspondant au
+	 * fichier texte présent dans le répertoire. Cette méthode retourne la liste
+	 * des documents ajoutés à la collection. (utilise les listes d'ID babelNet
+	 * )
+	 * 
+	 * @param pathDirectory
+	 * @param docCollection
+	 */
+	public static List<Document> fillDocCollectionL(String pathDirectory,
+			DocumentCollection docCollection) {
+
+		List<String> listOfFile = FileUtil.getListNameFile(pathDirectory);
+
+		// on trie la liste
+		Collections.sort(listOfFile);
+
+		List<Document> listOfDoc = new ArrayList<Document>();
+		// Pour chaque nom de fichier
+		for (String namefileTemp : listOfFile) {
+			String fileDestTemp;
+
+			// System.out.println(namefileTemp);
+
+			// on récupère le séparateur de fichiers utilisé par le système hôte
+			String separator = System.getProperty("file.separator");
+
+			// On définie le fichier résultat
+			fileDestTemp = pathDirectory + separator + namefileTemp;
+
+			// on récupère le texte
+			String tempBabel = FileUtil.getText(fileDestTemp);
+
+			// on le transforme en liste de termes
+			List<List<String>> listBabel = ListUtil
+					.separateTextInLists(tempBabel);
+
+			// on crée un document
+			Document docTemp = new Document(namefileTemp);
+
+			// on ajoute les termes aux documents
+			// addOccTerms(docTemp, listBabel);
+			for (List<String> l : listBabel) {
+				for (String s : l) {
+					docTemp.addOccTerm(s);
+				}
+			}
+
 			// on ajoute le document à la collection de document
 			docCollection.add(docTemp);
 
@@ -266,10 +423,12 @@ public class ComputeSim {
 	 * @return
 	 */
 	public static String getName(String dir) {
-		String nameDoc = "\t";//facilite l'exportation sous excel
+		String nameDoc = "\t";// facilite l'exportation sous excel
 		List<String> temp = FileUtil.getListNameFile(dir);
+		// on trie la liste
+		Collections.sort(temp);
 		for (String name : temp) {
-			nameDoc = nameDoc + name + ";\t";
+			nameDoc = nameDoc + name + "\t";
 		}
 		return nameDoc;
 	}
