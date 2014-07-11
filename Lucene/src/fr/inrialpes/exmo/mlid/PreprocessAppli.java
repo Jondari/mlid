@@ -186,12 +186,22 @@ public class PreprocessAppli {
 				filter = new StopWord(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("Stop-Num")) {
 				filter = new StopWord(tmpText, lang, true);
+			} else if (cmd.equalsIgnoreCase("Stop+NGr")) {
+				filter = new NGrams(new StopWord(tmpText, lang), n);
+			} else if (cmd.equalsIgnoreCase("Stop-Num+NGr")) {
+				filter = new NGrams(new StopWord(tmpText, lang, true), n);
+			} else if (cmd.equalsIgnoreCase("Stop+NGr-NoSpace")) {
+				filter = new NGrams(new StopWord(tmpText, lang), n, false);
+			} else if (cmd.equalsIgnoreCase("Stop-Num+NGr-NoSpace")) {
+				filter = new NGrams(new StopWord(tmpText, lang, true), n, false);
 			} else if (cmd.equalsIgnoreCase("Stem")) {
 				filter = new Stemming(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("Token")) {
-				filter = new Tokenization(tmpText);
+				filter = new Tokenization(tmpText, lang);
 			} else if (cmd.equalsIgnoreCase("NGr")) {
 				filter = new NGrams(tmpText, n);
+			} else if (cmd.equalsIgnoreCase("NGr-NoSpace")) {
+				filter = new NGrams(tmpText, n, false);
 			} else if (cmd.equalsIgnoreCase("Low+Token")) {
 				filter = new Tokenization(new LowerCase(tmpText), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop")) {
@@ -201,15 +211,27 @@ public class PreprocessAppli {
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Token")) {
 				filter = new Tokenization(new StopWord(new LowerCase(tmpText),
 						lang), lang);
+			} else if (cmd.equalsIgnoreCase("Low+Stop-Num+Token")) {
+				filter = new Tokenization(new StopWord(new LowerCase(tmpText),
+						lang, true), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem")) {
 				filter = new Stemming(
 						new StopWord(new LowerCase(tmpText), lang), lang);
+			} else if (cmd.equalsIgnoreCase("Low+Stop-Num+Stem")) {
+				filter = new Stemming(new StopWord(new LowerCase(tmpText),
+						lang, true), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+Token")) {
 				filter = new Tokenization(new Stemming(new StopWord(
 						new LowerCase(tmpText), lang), lang), lang);
+			} else if (cmd.equalsIgnoreCase("Low+Stop-Num+Stem+Token")) {
+				filter = new Tokenization(new Stemming(new StopWord(
+						new LowerCase(tmpText), lang, true), lang), lang);
 			} else if (cmd.equalsIgnoreCase("Low+Stop+Stem+NGr")) {
 				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
 						tmpText), lang), lang), n);
+			} else if (cmd.equalsIgnoreCase("Low+Stop-Num+Stem+NGr")) {
+				filter = new NGrams(new Stemming(new StopWord(new LowerCase(
+						tmpText), lang, true), lang), n);
 			} else {
 				throw new RuntimeException(
 						"Commande non reconnue! Arret du programme!");
