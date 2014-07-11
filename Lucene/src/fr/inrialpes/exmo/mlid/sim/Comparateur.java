@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import fr.inrialpes.exmo.mlid.util.Couple;
 import fr.inrialpes.exmo.mlid.util.Couples;
 import fr.inrialpes.exmo.mlid.util.FileUtil;
@@ -34,6 +36,8 @@ public class Comparateur {
 	public Comparateur() {
 	}
 
+	Map<String, Integer> nbTermText = new HashMap<String, Integer>();
+
 	/**
 	 * 
 	 * @param list
@@ -49,7 +53,9 @@ public class Comparateur {
 	 *            liste des listes à comparer
 	 */
 	public Comparateur(ArrayList<List<List<String>>> listOfList) {
-		listOfList2 = listOfList;
+
+		listOfList2 = ListUtil.removeDuplicateList(listOfList);
+		getNbTermText();
 	}
 
 	/**
@@ -61,10 +67,25 @@ public class Comparateur {
 	 */
 	public int getNbCommonTerm(List<String> list1, List<String> list2) {
 
-		HashSet<String> s1 = new HashSet();
+		HashSet<String> s1 = new HashSet<String>();
 		s1.addAll(list1);
 		s1.retainAll(list2);
 		return s1.size();
+	}
+
+	/**
+	 * Méthode qui retourne le nombre de terme en commun entre 2 listes
+	 * 
+	 * @param list1
+	 * @param list2
+	 * @return nombre de terme commun au deux listes
+	 */
+	public List<String> getCommonTerm(List<String> list1, List<String> list2) {
+
+		HashSet<String> s1 = new HashSet<String>();
+		s1.addAll(list1);
+		s1.retainAll(list2);
+		return new ArrayList<String>(s1);
 	}
 
 	/**
@@ -87,6 +108,27 @@ public class Comparateur {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Méthode qui retourne les listes de termes en commun.
+	 * 
+	 * @param listOfList1
+	 * @param listOfList2
+	 * @return
+	 */
+	public List<List<String>> getListCommonTerms(
+			List<List<String>> listOfList1, List<List<String>> listOfList2) {
+		List<List<String>> commonTerms = new ArrayList<List<String>>();
+		for (List<String> listCrt1 : listOfList1) {
+			for (List<String> listCrt2 : listOfList2) {
+				if (!listCrt1.equals(listCrt2)) {
+					if (this.getNbCommonTerm(listCrt1, listCrt2) >= 1)
+						commonTerms.add(getCommonTerm(listCrt1, listCrt2));
+				}
+			}
+		}
+		return commonTerms;
 	}
 
 	/**
@@ -122,7 +164,7 @@ public class Comparateur {
 	 * @param nameList2
 	 *            nom du fichier 2
 	 * @param nbTerm
-	 *            terme communs au deux fichiers
+	 *            le nombre de termes communs au deux fichiers
 	 * @param reportPath
 	 *            chemin vers le ficher rapport
 	 */
@@ -133,6 +175,45 @@ public class Comparateur {
 		System.out.println(phrase);
 		FileUtil.writeText(reportPath, phrase, true);
 		FileUtil.writeText(reportPath, "\r", true);
+	}
+
+	/**
+	 * Méthode qui écrit dans un fichier entré en paramètre les termes que 2
+	 * fichier ont en commun
+	 * 
+	 * @param nameList1
+	 *            nom du fichier 1
+	 * @param nameList2
+	 *            nom du fichier 2
+	 * @param commonTerms
+	 *            terme communs au deux fichiers
+	 * @param reportPath
+	 *            chemin vers le ficher rapport
+	 */
+	public void reportCommonTerms(String nameList1, String nameList2,
+			List<String> commonTerms, String reportPath) {
+		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
+				+ " ont en commun les termes : ";
+		System.out.println(phrase);
+		FileUtil.writeText(reportPath, phrase + "\r", true);
+		for (String term : commonTerms) {
+			FileUtil.writeText(reportPath, term + "\r", true);
+		}
+	}
+
+	/**
+	 * Méthode qui écrit dans un fichier entré en paramètre les termes que 2
+	 * fichier ont en commun
+	 * 
+	 * @param commonTerms
+	 *            terme communs au deux fichiers
+	 * @param reportPath
+	 *            chemin vers le ficher rapport
+	 */
+	public void reportCommonTerms(List<String> commonTerms, String reportPath) {
+		for (String term : commonTerms) {
+			FileUtil.writeText(reportPath, term + "\r", true);
+		}
 	}
 
 	/**
@@ -207,7 +288,7 @@ public class Comparateur {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
 		// création d'un ensemble pouvant contenir des listes
-		Couples couplesName = new Couples();
+		Couples<String> couplesName = new Couples<String>();
 
 		for (List<String> list1 : listOfList) {
 			for (List<String> list2 : listOfList) {
@@ -220,7 +301,7 @@ public class Comparateur {
 					// si ce couple de noms n'existe pas
 					if (!couplesName.exist(name1, name2)) {
 						// on le crée
-						Couple crtCpl = new Couple(name1, name2);
+						Couple<String> crtCpl = new Couple<String>(name1, name2);
 						// on l'ajoute à l'ensemble et la map
 						couplesName.add(crtCpl);
 						map.put(key, nbTerm);
@@ -298,8 +379,9 @@ public class Comparateur {
 	 */
 	public void compareDiffLangU(String lang1, String lang2) {
 		Map<String, Integer> map = new HashMap<String, Integer>();
+		Map<List<String>, Integer> mapCommonTerms = new HashMap<List<String>, Integer>();
 
-		Couples couplesName = new Couples();
+		Couples<String> couplesName = new Couples<String>();
 
 		for (List<String> list1 : listOfList) {
 			for (List<String> list2 : listOfList) {
@@ -308,21 +390,30 @@ public class Comparateur {
 					String name2 = list2.get(0);
 					String key = name1 + "/" + name2;
 					int nbTerm = getNbCommonTerm(list1, list2);
+
+					List<String> commonTerms = getCommonTerm(list1, list2);
+
 					if (!couplesName.exist(name1, name2)) {
-						Couple crtCpl = new Couple(name1, name2);
+						Couple<String> crtCpl = new Couple<String>(name1, name2);
 						couplesName.add(crtCpl);
 						map.put(key, nbTerm);
+						mapCommonTerms.put(commonTerms, nbTerm);
 					}
 				}
 			}
 		}
 
 		map = MapUtil.sortByValueDesc(map);
+		mapCommonTerms = MapUtil.sortByValueDesc(mapCommonTerms);
+
 		Iterator iterator = map.entrySet().iterator();
+
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Map.Entry) iterator.next();
+
 			String key = (String) entry.getKey();
 			Integer value = (Integer) entry.getValue();
+
 			String[] names = key.split("/");
 			String name1 = names[0];
 			String name2 = names[1];
@@ -337,7 +428,40 @@ public class Comparateur {
 							.equalsIgnoreCase(lang2))) {
 				reportNbCommonTerm(name1, name2, value, pathReport);
 			}
+		}
 
+		iterator = map.entrySet().iterator();
+		Iterator iterator2 = mapCommonTerms.entrySet().iterator();
+
+		while (iterator.hasNext() && iterator2.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			Map.Entry entry2 = (Map.Entry) iterator2.next();
+
+			String key = (String) entry.getKey();
+			Integer value = (Integer) entry.getValue();
+
+			List<String> key2 = (List<String>) entry2.getKey();
+
+			String[] names = key.split("/");
+			String name1 = names[0];
+			String name2 = names[1];
+
+			if ((name1.substring(name1.length() - 3, name1.length() - 1)
+					.equalsIgnoreCase(lang1) && !name2.substring(
+					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
+					lang1))
+					|| (name1.substring(name1.length() - 3, name1.length() - 1)
+							.equalsIgnoreCase(lang2) && !name2.substring(
+							name2.length() - 3, name2.length() - 1)
+							.equalsIgnoreCase(lang2))) {
+
+				reportCommonTerms(name1, name2, key2,
+						pathReport.substring(0, pathReport.length() - 4)
+								+ "2.txt");
+				FileUtil.writeText(
+						pathReport.substring(0, pathReport.length() - 4)
+								+ "2.txt", "\r", true);
+			}
 		}
 	}
 
@@ -347,51 +471,140 @@ public class Comparateur {
 	 * couple de liste ont en commun sans doublon. (avec liste d'ID babelNet)
 	 */
 	public void compareDiffLangU(String lang1, String lang2, boolean listID) {
-		Map<String, Integer> map = new HashMap<String, Integer>();
+		if (listID) {
+			Map<String, Integer> map = new HashMap<String, Integer>();
 
-		Couples couplesName = new Couples();
-		int nbTerm = 0;
-		
-		for (List<List<String>> list1 : listOfList2) {
-			for (List<List<String>> list2 : listOfList2) {
-				if (!list1.equals(list2)) {
-					String name1 = list1.get(0).get(0);
-					String name2 = list2.get(0).get(0);
-					String key = name1 + "/" + name2;
-					System.out.println("key = " + key);
-					if(haveCommonTerm(list1, list2)){
-						nbTerm++;
-						if (!couplesName.exist(name1, name2)) {
-							Couple crtCpl = new Couple(name1, name2);
-							couplesName.add(crtCpl);
-							map.put(key, nbTerm);
+			Map<List<List<String>>, Integer> mapCommonTerms = new HashMap<List<List<String>>, Integer>();
+
+			Couples<String> couplesName = new Couples<String>();
+			int nbTerm = 0;
+
+			Couples<Integer> listCouples = new Couples<Integer>();
+
+			int i = 0;
+			int j = 0;
+			for (List<List<String>> list1 : listOfList2) {
+				j = 0;
+				for (List<List<String>> list2 : listOfList2) {
+					if (!list1.equals(list2)) {
+						String name1 = list1.get(0).get(0);
+						String name2 = list2.get(0).get(0);
+						String key = name1 + "/" + name2;
+
+						if (haveCommonTerm(list1, list2)) {
+
+							if (!listCouples.exist(i, j)) {
+								Couple<Integer> crtIndice = new Couple<Integer>(
+										i, j);
+								listCouples.add(crtIndice);
+								List<List<String>> commonTerms = getListCommonTerms(
+										list1, list2);
+								nbTerm = commonTerms.size();
+							}
+
+							if (!couplesName.exist(name1, name2)) {
+								Couple<String> crtCpl = new Couple<String>(
+										name1, name2);
+								couplesName.add(crtCpl);
+								map.put(key, nbTerm);
+
+								List<List<String>> commonTerms = getListCommonTerms(
+										list1, list2);
+
+								mapCommonTerms.put(commonTerms, nbTerm);
+							}
 						}
+					}
+					j++;
+				}
+				i++;
+			}
+
+			map = MapUtil.sortByValueDesc(map);
+			mapCommonTerms = MapUtil.sortByValueDesc(mapCommonTerms);
+
+			Iterator iterator = map.entrySet().iterator();
+
+			while (iterator.hasNext()) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+
+				String key = (String) entry.getKey();
+
+				Integer value = (Integer) entry.getValue();
+				String[] names = key.split("/");
+				String name1 = names[0];
+				String name2 = names[1];
+
+				if ((name1.substring(name1.length() - 3, name1.length() - 1)
+						.equalsIgnoreCase(lang1) && !name2.substring(
+						name2.length() - 3, name2.length() - 1)
+						.equalsIgnoreCase(lang1))
+						|| (name1.substring(name1.length() - 3,
+								name1.length() - 1).equalsIgnoreCase(lang2) && !name2
+								.substring(name2.length() - 3,
+										name2.length() - 1).equalsIgnoreCase(
+										lang2))) {
+					// reportNbCommonTerm(name1, name2, value, pathReport);
+					int nbTermText1 = nbTermText.get(name1);
+					int nbTermText2 = nbTermText.get(name2);
+					String phrase = name1 + " " + name2 + " " + value + " "
+							+ nbTermText1 + " " + nbTermText2;
+					FileUtil.writeText(pathReport, phrase + "\r", true);
+				}
+			}
+
+			iterator = map.entrySet().iterator();
+			Iterator iterator2 = mapCommonTerms.entrySet().iterator();
+
+			while (iterator.hasNext() && iterator2.hasNext()) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+				Map.Entry entry2 = (Map.Entry) iterator2.next();
+
+				String key = (String) entry.getKey();
+				List<List<String>> key2 = (List<List<String>>) entry2.getKey();
+
+				Integer value = (Integer) entry.getValue();
+				String[] names = key.split("/");
+				String name1 = names[0];
+				String name2 = names[1];
+
+				if ((name1.substring(name1.length() - 3, name1.length() - 1)
+						.equalsIgnoreCase(lang1) && !name2.substring(
+						name2.length() - 3, name2.length() - 1)
+						.equalsIgnoreCase(lang1))
+						|| (name1.substring(name1.length() - 3,
+								name1.length() - 1).equalsIgnoreCase(lang2) && !name2
+								.substring(name2.length() - 3,
+										name2.length() - 1).equalsIgnoreCase(
+										lang2))) {
+					String phrase = "Les fichiers " + name1 + " et " + name2
+							+ " ont en commun les termes : ";
+					FileUtil.writeText(
+							pathReport.substring(0, pathReport.length() - 4)
+									+ "2.txt", phrase + "\r", true);
+					for (List<String> listTerms : key2) {
+						reportCommonTerms(
+								listTerms,
+								pathReport.substring(0, pathReport.length() - 4)
+										+ "2.txt");
+						FileUtil.writeText(
+								pathReport.substring(0, pathReport.length() - 4)
+										+ "2.txt", "\r", true);
 					}
 				}
 			}
-		}
+		} else
+			throw new RuntimeException("Utilisé la méthode sans booléen!");
+	}
 
-		map = MapUtil.sortByValueDesc(map);
-		Iterator iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			String key = (String) entry.getKey();
-			Integer value = (Integer) entry.getValue();
-			String[] names = key.split("/");
-			String name1 = names[0];
-			String name2 = names[1];
-
-			if ((name1.substring(name1.length() - 3, name1.length() - 1)
-					.equalsIgnoreCase(lang1) && !name2.substring(
-					name2.length() - 3, name2.length() - 1).equalsIgnoreCase(
-					lang1))
-					|| (name1.substring(name1.length() - 3, name1.length() - 1)
-							.equalsIgnoreCase(lang2) && !name2.substring(
-							name2.length() - 3, name2.length() - 1)
-							.equalsIgnoreCase(lang2))) {
-				reportNbCommonTerm(name1, name2, value, pathReport);
-			}
-
+	/**
+	 * Méthode qui remplie l'attribut nbTermtext avec le nom de fichier et le
+	 * nombre de terme que ce dernier possède
+	 */
+	private void getNbTermText() {
+		for (List<List<String>> crtText : listOfList2) {
+			nbTermText.put(crtText.get(0).get(0), crtText.size());
+			// System.out.println(crtText.get(0).get(0) + " " + crtText.size());
 		}
 	}
 
