@@ -479,61 +479,51 @@ public class Comparateur {
 			Couples<String> couplesName = new Couples<String>();
 			int nbTerm = 0;
 
-			Couples<Integer> listCouples = new Couples<Integer>();
-
-			int i = 0;
-			int j = 0;
 			for (List<List<String>> list1 : listOfList2) {
-				j = 0;
 				for (List<List<String>> list2 : listOfList2) {
 					if (!list1.equals(list2)) {
 						String name1 = list1.get(0).get(0);
 						String name2 = list2.get(0).get(0);
 						String key = name1 + "/" + name2;
+						
+						// si les fichiers sont de langues différentes on cherche leur terme en commun */
+						if ((name1.substring(name1.length() - 3, name1.length() - 1)
+								.equalsIgnoreCase(lang1) && !name2.substring(
+								name2.length() - 3, name2.length() - 1)
+								.equalsIgnoreCase(lang1))
+								|| (name1.substring(name1.length() - 3,
+										name1.length() - 1).equalsIgnoreCase(lang2) && !name2
+										.substring(name2.length() - 3,
+												name2.length() - 1).equalsIgnoreCase(
+												lang2))) {
 
 						if (haveCommonTerm(list1, list2)) {
-
-							if (!listCouples.exist(i, j)) {
-								Couple<Integer> crtIndice = new Couple<Integer>(
-										i, j);
-								listCouples.add(crtIndice);
-								List<List<String>> commonTerms = getListCommonTerms(
-										list1, list2);
-								nbTerm = commonTerms.size();
-							}
 
 							if (!couplesName.exist(name1, name2)) {
 								Couple<String> crtCpl = new Couple<String>(
 										name1, name2);
 								couplesName.add(crtCpl);
-								map.put(key, nbTerm);
-
 								List<List<String>> commonTerms = getListCommonTerms(
 										list1, list2);
-
+								nbTerm = commonTerms.size();
+								map.put(key, nbTerm);
 								mapCommonTerms.put(commonTerms, nbTerm);
 							}
 						}
 						// s'ils n'ont pas de terme en communs
 						/*else {
-							if (!listCouples.exist(i, j)) {
-								Couple<Integer> crtIndice = new Couple<Integer>(
-										i, j);
-								listCouples.add(crtIndice);
-								nbTerm = 0;
-							}
-
 							if (!couplesName.exist(name1, name2)) {
 								Couple<String> crtCpl = new Couple<String>(
 										name1, name2);
-								couplesName.add(crtCpl);
+								couplesName.add(crtCpl);		
+								nbTerm = 0;
 								map.put(key, nbTerm);
 							}
 						}*/
+						
+						}
 					}
-					j++;
 				}
-				i++;
 			}
 
 			map = MapUtil.sortByValueDesc(map);
@@ -614,7 +604,7 @@ public class Comparateur {
 	}
 
 	/**
-	 * Méthode qui remplie l'attribut nbTermtext avec le nom de fichier et le
+	 * Méthode qui remplie l'attribut nbTermText avec le nom de fichier et le
 	 * nombre de terme que ce dernier possède
 	 */
 	private void getNbTermText() {
