@@ -9,8 +9,10 @@ import java.util.StringTokenizer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseTokenizer;
+import org.apache.lucene.util.Version;
 
 public class Tokenization extends PreprocessFilter {
 
@@ -67,7 +69,8 @@ public class Tokenization extends PreprocessFilter {
 
 	public void process(String text, String lang) {
 		if (lang.equalsIgnoreCase("zh")) {
-			tokenizeString(new ChineseAnalyzer(), text);
+			// tokenizeString(new ChineseAnalyzer(), text);
+			processChineseString(text);
 		} else {
 			process(text);
 		}
@@ -84,17 +87,31 @@ public class Tokenization extends PreprocessFilter {
 	 *            texte à tokenizer
 	 * @return
 	 */
-	private List<String> tokenizeString(Analyzer analyzer, String string) {
+	/*
+	 * private List<String> tokenizeString(Analyzer analyzer, String string) {
+	 * List<String> wordList0 = new ArrayList<String>(); String wordList = "";
+	 * String token = ""; try { TokenStream stream = analyzer.tokenStream(null,
+	 * new StringReader( string)); stream.reset(); int i = 0; while
+	 * (stream.incrementToken()) { token = stream.toString().substring(2, 3);
+	 * wordList0.add(token); if (i == 0) { wordList = wordList + token; i++; }
+	 * else { wordList = wordList + " " + token; } } } catch (IOException e) {
+	 * throw new RuntimeException(e); } this.crtList = wordList0; this.crtString
+	 * = wordList; return wordList0; }
+	 */
+
+	private List<String> processChineseString(String string) {
 		List<String> wordList0 = new ArrayList<String>();
+
+		CJKAnalyzer zhAnalyzer = new CJKAnalyzer(Version.LUCENE_29);
 		String wordList = "";
 		String token = "";
 		try {
-			TokenStream stream = analyzer.tokenStream(null, new StringReader(
+			TokenStream stream = zhAnalyzer.tokenStream(null, new StringReader(
 					string));
 			stream.reset();
 			int i = 0;
 			while (stream.incrementToken()) {
-				token = stream.toString().substring(2, 3);
+				token = stream.toString().substring(2, 4);
 				wordList0.add(token);
 				if (i == 0) {
 					wordList = wordList + token;
