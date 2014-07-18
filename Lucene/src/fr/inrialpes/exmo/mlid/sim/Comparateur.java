@@ -541,22 +541,11 @@ public class Comparateur {
 				String name1 = names[0];
 				String name2 = names[1];
 
-				if ((name1.substring(name1.length() - 3, name1.length() - 1)
-						.equalsIgnoreCase(lang1) && !name2.substring(
-						name2.length() - 3, name2.length() - 1)
-						.equalsIgnoreCase(lang1))
-						|| (name1.substring(name1.length() - 3,
-								name1.length() - 1).equalsIgnoreCase(lang2) && !name2
-								.substring(name2.length() - 3,
-										name2.length() - 1).equalsIgnoreCase(
-										lang2))) {
-					// reportNbCommonTerm(name1, name2, value, pathReport);
-					int nbTermText1 = nbTermText.get(name1);
-					int nbTermText2 = nbTermText.get(name2);
-					String phrase = name1 + " " + name2 + " " + value + " "
-							+ nbTermText1 + " " + nbTermText2;
-					FileUtil.writeText(pathReport, phrase + "\r", true);
-				}
+				int nbTermText1 = nbTermText.get(name1);
+				int nbTermText2 = nbTermText.get(name2);
+				String phrase = name1 + " " + name2 + " " + value + " "
+						+ nbTermText1 + " " + nbTermText2;
+				FileUtil.writeText(pathReport, phrase + "\r", true);
 			}
 
 			iterator = map.entrySet().iterator();
@@ -574,29 +563,19 @@ public class Comparateur {
 				String name1 = names[0];
 				String name2 = names[1];
 
-				if ((name1.substring(name1.length() - 3, name1.length() - 1)
-						.equalsIgnoreCase(lang1) && !name2.substring(
-						name2.length() - 3, name2.length() - 1)
-						.equalsIgnoreCase(lang1))
-						|| (name1.substring(name1.length() - 3,
-								name1.length() - 1).equalsIgnoreCase(lang2) && !name2
-								.substring(name2.length() - 3,
-										name2.length() - 1).equalsIgnoreCase(
-										lang2))) {
-					String phrase = "Les fichiers " + name1 + " et " + name2
-							+ " ont en commun les termes : ";
+				String phrase = "Les fichiers " + name1 + " et " + name2
+						+ " ont en commun les termes : ";
+				FileUtil.writeText(
+						pathReport.substring(0, pathReport.length() - 4)
+								+ "2.txt", phrase + "\r", true);
+				for (List<String> listTerms : key2) {
+					reportCommonTerms(
+							listTerms,
+							pathReport.substring(0, pathReport.length() - 4)
+									+ "2.txt");
 					FileUtil.writeText(
 							pathReport.substring(0, pathReport.length() - 4)
-									+ "2.txt", phrase + "\r", true);
-					for (List<String> listTerms : key2) {
-						reportCommonTerms(
-								listTerms,
-								pathReport.substring(0, pathReport.length() - 4)
-										+ "2.txt");
-						FileUtil.writeText(
-								pathReport.substring(0, pathReport.length() - 4)
-										+ "2.txt", "\r", true);
-					}
+									+ "2.txt", "\r", true);
 				}
 			}
 		} else
