@@ -79,27 +79,8 @@ public class PreprocessAppli {
 		option.addOption(taille);
 
 		if (args.length == 0) {
-			System.out
-					.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
-			System.out
-					.println("Vous pouvez modifier les paramètres manuellement!");
-
-			// on récupère le non du système d'information
-			String Os = System.getProperty("os.name");
-
-			// on établis le chemin vers les dossiers d'exemple en fonction
-			// des séparateurs du système d'exploitation
-			if (Os.contains("Windows") || Os.contains("windows")) {
-				dirPath = System.getProperty("user.dir") + "\\src\\example\\Fr";
-				dirPathDest = System.getProperty("user.dir")
-						+ "\\src\\example\\Dest";
-			} else {
-				dirPath = System.getProperty("user.dir") + "/src/example/Fr";
-				dirPathDest = System.getProperty("user.dir")
-						+ "/src/example/Dest";
-			}
-			cmd = "Low+Stop+Stem+NGr";
-			lang = "fr";
+			throw new RuntimeException(
+					"Pas d'argument! Veuillez entrer des arguments!");
 		}
 		// sinon on effecture directement le traitement des données.
 		else {

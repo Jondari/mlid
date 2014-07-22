@@ -59,25 +59,8 @@ public class ComputeSim {
 		option.addOption(mesure);
 
 		if (args.length == 0) {
-			System.out
-					.println("Vous n'avez pas entré d'argument! Ceci est un exemple d'exécution.");
-			System.out
-					.println("Vous pouvez modifier les paramètres manuellement!");
-
-			// on récupère le non du système d'information
-			String Os = System.getProperty("os.name");
-
-			// on établis le chemin vers les dossiers d'exemple en fonction
-			// des séparateurs du système d'exploitation
-			if (Os.contains("Windows") || Os.contains("windows")) {
-				d1S = System.getProperty("user.dir")
-						+ "\\src\\example\\Fr\\mod";
-				d2S = System.getProperty("user.dir")
-						+ "\\src\\example\\EN\\mod";
-			} else {
-				d1S = System.getProperty("user.dir") + "/src/example/Fr/mod";
-				d2S = System.getProperty("user.dir") + "/src/example/En/mod";
-			}
+			throw new RuntimeException(
+					"Pas d'argument! Veuillez entrer des arguments!");
 		}
 		// sinon on effecture directement le traitement des données.
 		else {
