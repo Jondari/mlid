@@ -16,8 +16,7 @@ public class LowerCase extends PreprocessFilter {
 
 	public LowerCase(PreprocessFilter crtfilter) {
 		this.crtString = crtfilter.getCrtString();
-		String newString = process(crtString);
-		// crtfilter.setCrtString(newString);
+		this.crtString = this.process(this.crtString);
 	}
 
 	public String process(String text) {
