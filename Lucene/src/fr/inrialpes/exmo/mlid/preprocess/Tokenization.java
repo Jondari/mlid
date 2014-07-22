@@ -79,7 +79,8 @@ public class Tokenization extends PreprocessFilter {
 
 	/**
 	 * Méthode qui effectue une tokenisation sur la chaîne de caractère entré en
-	 * paramètre en fonction de l'analyzer spécifé
+	 * paramètre en fonction de l'analyzer spécifé (adapté pour le chinois
+	 * uniquement)
 	 * 
 	 * @param analyzer
 	 *            analyzer de la langue du texte
@@ -87,17 +88,32 @@ public class Tokenization extends PreprocessFilter {
 	 *            texte à tokenizer
 	 * @return
 	 */
-	/*
-	 * private List<String> tokenizeString(Analyzer analyzer, String string) {
-	 * List<String> wordList0 = new ArrayList<String>(); String wordList = "";
-	 * String token = ""; try { TokenStream stream = analyzer.tokenStream(null,
-	 * new StringReader( string)); stream.reset(); int i = 0; while
-	 * (stream.incrementToken()) { token = stream.toString().substring(2, 3);
-	 * wordList0.add(token); if (i == 0) { wordList = wordList + token; i++; }
-	 * else { wordList = wordList + " " + token; } } } catch (IOException e) {
-	 * throw new RuntimeException(e); } this.crtList = wordList0; this.crtString
-	 * = wordList; return wordList0; }
-	 */
+	private List<String> tokenizeString(Analyzer analyzer, String string) {
+		List<String> wordList0 = new ArrayList<String>();
+		String wordList = "";
+		String token = "";
+		try {
+			TokenStream stream = analyzer.tokenStream(null, new StringReader(
+					string));
+			stream.reset();
+			int i = 0;
+			while (stream.incrementToken()) {
+				token = stream.toString().substring(2, 3);
+				wordList0.add(token);
+				if (i == 0) {
+					wordList = wordList + token;
+					i++;
+				} else {
+					wordList = wordList + " " + token;
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		this.crtList = wordList0;
+		this.crtString = wordList;
+		return wordList0;
+	}
 
 	private List<String> processChineseString(String string) {
 		List<String> wordList0 = new ArrayList<String>();
