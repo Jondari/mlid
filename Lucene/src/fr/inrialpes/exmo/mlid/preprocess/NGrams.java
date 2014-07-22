@@ -10,16 +10,12 @@ public class NGrams extends PreprocessFilter {
 	public NGrams(PreprocessFilter crtfilter, String lang, int n) {
 		this.crtString = crtfilter.getCrtString();
 		this.crtList = process(crtString, lang, n, true);
-		// String newString = crtList.toString();
-		// crtfilter.setCrtString(newString);
 	}
 
 	public NGrams(PreprocessFilter crtfilter, String lang, int n,
 			boolean withSpace) {
 		this.crtString = crtfilter.getCrtString();
 		this.crtList = process(crtString, lang, n, withSpace);
-		// String newString = crtList.toString();
-		// crtfilter.setCrtString(newString);
 	}
 
 	public NGrams(String text, String lang, int n) {
@@ -35,9 +31,8 @@ public class NGrams extends PreprocessFilter {
 	@Override
 	public String process(String text) {
 		// TODO Auto-generated method stub
-		System.out
-				.println("Cette méthode est déprécié utilisé process(String text, int n) !");
-		return null;
+		throw new RuntimeException(
+				"Cette méthode est dépréciée utiliser process(String text, int n) !");
 	}
 
 	public List<String> process(String text, String lang, int n,
