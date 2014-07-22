@@ -19,16 +19,6 @@ import java.util.StringTokenizer;
 public class BabelNetService {
 
 	/**
-	 * @deprecated
-	 */
-	private static String urlApi = "http://babelnet.org/search.jsp";
-
-	/**
-	 * @deprecated
-	 */
-	private static String identifier = "bn:";
-
-	/**
 	 * 
 	 */
 	private static String noResult = "No result found";
@@ -36,11 +26,6 @@ public class BabelNetService {
 	public static Map<String, String> mapId = new HashMap<String, String>();
 	
 	public static Map<String, List<String>> mapIds = new HashMap<String, List<String>>();
-
-	/**
-	 * @deprecated
-	 */
-	private static String limitRequest = "Too many requests";
 
 	/**
 	 * Méthode qui retourne la liste d'id babelnet du mot entré en paramètre
@@ -68,7 +53,6 @@ public class BabelNetService {
 			List<BabelSynset> synsets = bn.getSynsets(langage, word);
 			for (BabelSynset synset : synsets) {
 				listId.add(synset.getId());
-				// System.out.println(synset.getId());
 			}
 			return listId;
 		} catch (IOException e) {
@@ -90,7 +74,6 @@ public class BabelNetService {
 		List<String> tempList = getListId(word, lang);
 		// return tempList.get(0);
 		if (tempList.isEmpty()) {
-			// System.out.println("liste vide");
 			return noResult;
 		} else
 			return tempList.get(0);
@@ -140,83 +123,6 @@ public class BabelNetService {
 			listBabelNet.add(mapIds.get(term));
 		}
 		return listBabelNet;
-	}
-
-	/**
-	 * Méthode qui retourne la liste d'id babelnet du mot entré en paramètre à
-	 * partir de l'API web
-	 * 
-	 * @deprecated
-	 * @param word
-	 *            mot dont on veut la liste d'id babelnet
-	 * @param lang
-	 *            langue du mot
-	 * @return liste d'id babelnet
-	 */
-	public static List<String> getListIdWebAPI(String word, String lang) {
-		String request = urlApi + "?word=" + word + "&lang=" + lang;
-		// System.out.println(request);
-		try {
-			URL url = new URL(request);
-			URLConnection connection = url.openConnection();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					connection.getInputStream()));
-			List<String> listId = new ArrayList<String>();
-			String ligne;
-			int i = 0;
-			while ((ligne = reader.readLine()) != null) {
-				// affiche le fichier source
-				// System.out.println(ligne);
-				if (ligne.contains(identifier)) {
-					// on ne prend pas le premier id car c'est un id d'exemple
-					// on en prend un sur 4 car 4 occurence de l'id apparaissent
-					if (ligne.contains(identifier) && i > 0 && (i % 4 == 0)) {
-						// System.out
-						// .println("************************************");
-						int index = ligne.indexOf(identifier);
-						// on récupère le mot commençant à la position "index"
-						// et on l'ajoute à la liste d'id
-						String temp = ligne.substring(index);
-						StringTokenizer st = new StringTokenizer(temp);
-						// System.out.println("Le token vaut : " +
-						// filterId(st.nextToken()));
-						listId.add(filterId(st.nextToken()));
-					}
-					i++;
-				}
-				if (ligne.contains(noResult)) {
-					listId.add(noResult);
-					break;
-				}
-				if (ligne.contains(limitRequest)) {
-					listId.add(noResult);
-					System.out
-							.println("Nombre limite de requête atteiente. API non utilisable jusqu'à demain!");
-				}
-			}
-			return listId;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Méthode qui filtre les id obtenu afin de les rendre utilisables
-	 * 
-	 * @deprecated
-	 * @param idToFilter
-	 *            id à filtrer
-	 * @return id filtrer
-	 */
-	private static String filterId(String idToFilter) {
-		String temp1 = idToFilter.replace("\">[explore]</a>", "");
-		String temp2 = temp1.replace("bn:", "");
-		return temp2;
 	}
 
 }
