@@ -1,10 +1,6 @@
 package fr.inrialpes.exmo.mlid.preprocess;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -142,36 +138,6 @@ public class StopWord extends PreprocessFilter {
 		wordList = removePunctuation(wordList);
 		this.crtString = wordList;
 		return wordList;
-	}
-
-	/**
-	 * méthode qui récupère une liste de mot et la met dans une liste et
-	 * retourne la obtenu liste
-	 * 
-	 * @deprecated
-	 */
-	List<String> getStopWordList(String filePath) {
-		Scanner scanner;
-		try {
-			scanner = new Scanner(new File(filePath));
-			List<String> stopWord = new ArrayList<String>();
-
-			// On boucle sur chaque champ detecté
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-
-				// System.out.println(line);
-				// faites ici votre traitement
-				stopWord.add(line);
-			}
-
-			scanner.close();
-			return stopWord;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
