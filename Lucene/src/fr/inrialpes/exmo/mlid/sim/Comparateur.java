@@ -1,14 +1,11 @@
 package fr.inrialpes.exmo.mlid.sim;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.management.RuntimeErrorException;
 
 import fr.inrialpes.exmo.mlid.util.Couple;
 import fr.inrialpes.exmo.mlid.util.Couples;
@@ -129,30 +126,6 @@ public class Comparateur {
 			}
 		}
 		return commonTerms;
-	}
-
-	/**
-	 * Méthode qui écrit dans le fichier src/rapport/rapport.txt le nombre de
-	 * terme que 2 fichier ont en commun
-	 * 
-	 * @param nameList1
-	 *            nom du fichier 1
-	 * @param nameList2
-	 *            nom du fichier 2
-	 * @param nbTerm
-	 *            terme communs au deux fichiers
-	 */
-	public void reportNbCommonTerm(String nameList1, String nameList2,
-			int nbTerm) {
-		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
-				+ " ont " + nbTerm + " termes en commun.";
-		System.out.println(phrase);
-		File rapport = new File("./src/rapport/");
-		if (!rapport.exists()) {
-			rapport.mkdir();
-		}
-		FileUtil.writeText("./src/rapport/rapport.txt", phrase, true);
-		FileUtil.writeText("./src/rapport/rapport.txt", "\r", true);
 	}
 
 	/**
