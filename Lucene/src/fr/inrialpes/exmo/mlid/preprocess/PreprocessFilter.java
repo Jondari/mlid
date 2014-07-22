@@ -32,16 +32,11 @@ public abstract class PreprocessFilter {
 
 	public List<String> getList() {
 		String temp = crtString.replace(" ", ";");
-		// System.out.println(" ici" + temp);
-		// temp = temp.replace(".", "");
-		// temp = temp.replace("?", "");
-		// temp = temp.replace(",","");
 		temp = temp.replace(";;", "");
 		String[] tabTest = temp.split(";");
 		List<String> list = Arrays.asList(tabTest);
 		list.set(0, list.get(0).replace("[", ""));
 		list.set(list.size() - 1, list.get(list.size() - 1).replace("]", ""));
-		// System.out.println("list " + list);
 		return list;
 	}
 }
