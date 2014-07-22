@@ -27,7 +27,6 @@ public class ListUtil {
 	
 	public static List<List<List<String>>> removeDuplicateList (List<List<List<String>>> listWithDuplicate) {
 		List<List<List<String>>> newList = new ArrayList<List<List<String>>>();
-		//List<String> tempList = new ArrayList<String>();
 		// pour chaque texte
 		for(List<List<String>> crtText : listWithDuplicate){
 			List<List<String>> listTermTemp = new ArrayList<List<String>>();
@@ -43,7 +42,6 @@ public class ListUtil {
 		}
 		return newList;
 	}
-	///////////////////////////////////
 
 	/**
 	 * Méthode qui supprime tout les termes correspondant à l'argument term
