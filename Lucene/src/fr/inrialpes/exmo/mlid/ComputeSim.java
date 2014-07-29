@@ -94,7 +94,7 @@ public class ComputeSim {
 	/**
 	 * méthode qui genere la matrice des similarités des fichiers presents dans
 	 * les dossiers d1 et d2
-	 * 
+	 *
 	 * @param d1
 	 *            dossier contenant les fichiers babelnet d'une langue
 	 * @param d2
@@ -154,12 +154,11 @@ public class ComputeSim {
 				if (mesureS.equalsIgnoreCase("Cos")) {
 					sim = new CosineVM();
 					toWrite = toWrite
-							+ ((CosineVM) sim).getSim(vector1, vector2) + ";\t";
+							+ ((CosineVM) sim).getSim(vector1, vector2) + ";";
 				} else if (mesureS.equalsIgnoreCase("Jacc")) {
 					sim = new JaccardVM();
 					toWrite = toWrite
-							+ ((JaccardVM) sim).getSim(vector1, vector2)
-							+ ";\t";
+							+ ((JaccardVM) sim).getSim(vector1, vector2) + ";";
 				} else {
 					System.out.println("La mesure utilisé est incorrect");
 					System.exit(-1);
@@ -167,10 +166,10 @@ public class ComputeSim {
 				// toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
 			}
 			// on écrit le nom du document courant du dossier
-			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
+			FileUtil.writeText(d1S + "/matrice.csv", ";" + nameDoc2.get(i)
 					+ "; ", true);
 			// on écrit la ligne de matrice
-			FileUtil.writeText(d1S + "/matrice.csv", toWrite + "\n", true);
+			FileUtil.writeText(d1S + "/matrice.csv", toWrite + ";", true);
 			i++;
 
 		}
@@ -179,7 +178,7 @@ public class ComputeSim {
 	/**
 	 * méthode qui genere la matrice des similarités des fichiers presents dans
 	 * les dossiers d1 et d2 (utilise les listes d'ID babelNet )
-	 * 
+	 *
 	 * @param d1
 	 *            dossier contenant les fichiers babelnet d'une langue
 	 * @param d2
@@ -243,11 +242,11 @@ public class ComputeSim {
 				if (mesureS.equalsIgnoreCase("Cos")) {
 					sim = new CosineVM();
 					toWrite = toWrite
-							+ ((CosineVM) sim).getSim(vector1, vector2) + "\t";
+							+ ((CosineVM) sim).getSim(vector1, vector2) + ";";
 				} else if (mesureS.equalsIgnoreCase("Jacc")) {
 					sim = new JaccardVM();
 					toWrite = toWrite
-							+ ((JaccardVM) sim).getSim(vector1, vector2) + "\t";
+							+ ((JaccardVM) sim).getSim(vector1, vector2) + ";";
 				} else {
 					System.out.println("La mesure utilisé est incorrect");
 					System.exit(-1);
@@ -256,7 +255,7 @@ public class ComputeSim {
 			}
 			// on écrit le nom du document courant du dossier
 			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
-					+ " ", true);
+					+ ";", true);
 			// on écrit la ligne de matrice
 			FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
 			i++;
@@ -269,7 +268,7 @@ public class ComputeSim {
 	 * collection de document en paramètre avec des document correspondant au
 	 * fichier texte présent dans le répertoire. Cette méthode retourne la liste
 	 * des documents ajoutés à la collection.
-	 * 
+	 *
 	 * @param pathDirectory
 	 * @param docCollection
 	 */
@@ -313,7 +312,7 @@ public class ComputeSim {
 	 * fichier texte présent dans le répertoire. Cette méthode retourne la liste
 	 * des documents ajoutés à la collection. (utilise les listes d'ID babelNet
 	 * )
-	 * 
+	 *
 	 * @param pathDirectory
 	 * @param docCollection
 	 */
@@ -368,7 +367,7 @@ public class ComputeSim {
 	/***
 	 * Méthode qui retourne la liste des vecteurs correspondant à la liste des
 	 * documents entré en paramètre
-	 * 
+	 *
 	 * @param vectorType
 	 *            type du vecteur : TF ou TFIDF
 	 * @param listDoc
@@ -401,17 +400,17 @@ public class ComputeSim {
 	/**
 	 * Méthode qui retourne la chaine de caractère correspondant au nom de
 	 * fichier texte du répertoire entré en paramètre
-	 * 
+	 *
 	 * @param dir
 	 * @return
 	 */
 	public static String getName(String dir) {
-		String nameDoc = "\t";// facilite l'exportation sous excel
+		String nameDoc = "";// facilite l'exportation sous excel
 		List<String> temp = FileUtil.getListNameFile(dir);
 		// on trie la liste
 		Collections.sort(temp);
 		for (String name : temp) {
-			nameDoc = nameDoc + name + "\t";
+			nameDoc = nameDoc + name + ";";
 		}
 		return nameDoc;
 	}
