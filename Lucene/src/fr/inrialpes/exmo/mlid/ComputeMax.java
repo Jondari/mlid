@@ -8,6 +8,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -59,12 +60,29 @@ public class ComputeMax {
 		// Oblige le paramètre d'être présent lors de l'exécution
 		f.setRequired(true);
 
+		// Utilisation de listes d'id
+		Boolean list = null;
+		Option L = new Option("L", false,
+				"Utilisation d'une liste d'ID pour un terme");
+		// Oblige le paramètre d'être présent lors de l'exécution
+
+		Option noL = new Option("noL", false,
+				"Utilisation d'un seul ID pour un terme");
+		// Oblige le paramètre d'être présent lors de l'exécution
+
+		OptionGroup group = new OptionGroup();
+		group.setRequired(true);
+
+		group.addOption(L);
+		group.addOption(noL);
+
 		// On ajoute nos Option
 		option.addOption(d1);
 		option.addOption(langD1);
 		option.addOption(d2);
 		option.addOption(langD2);
 		option.addOption(f);
+		option.addOptionGroup(group);
 
 		if (args.length == 0) {
 			throw new RuntimeException(
@@ -82,15 +100,21 @@ public class ComputeMax {
 				pathDirectoryReport = cmds.getOptionValue("f");
 				langD1S = cmds.getOptionValue("langD1");
 				langD2S = cmds.getOptionValue("langD2");
+				list = cmds.hasOption("L");
 
-				// on lance la comparaison
-				// Pour utiliser avec le première id babelnet
-				//compute(pathDirectoryLang1, pathDirectoryLang2, langD1S,
-						//langD2S, pathDirectoryReport);
-				
-				// Pour utiliser avec la liste d'id babelnet
-				computeL(pathDirectoryLang1, pathDirectoryLang2, langD1S,
-						langD2S, pathDirectoryReport);
+				if (!list) {
+					// on lance la comparaison
+					// Pour utiliser avec le première id babelnet
+					System.out.println("utilisation de compute");
+					compute(pathDirectoryLang1, pathDirectoryLang2, langD1S,
+							langD2S, pathDirectoryReport);
+				} else {
+
+					// Pour utiliser avec la liste d'id babelnet
+					System.out.println("utilisation de computeL");
+					computeL(pathDirectoryLang1, pathDirectoryLang2, langD1S,
+							langD2S, pathDirectoryReport);
+				}
 
 			} catch (ParseException e) {
 				// Affichage de l'aide
@@ -173,7 +197,7 @@ public class ComputeMax {
 		int i = 0;
 		for (String text : list) {
 			// récupération de la liste de terme
-			PreprocessFilter token = new Tokenization(text,lang);
+			PreprocessFilter token = new Tokenization(text, lang);
 			List<String> listBabelId = token.getList();
 
 			// ajout du nom de fichier en tête de liste
@@ -229,8 +253,8 @@ public class ComputeMax {
 			computeProcessL(testComp1, nameFile1, listOfList, langD1);
 
 			computeProcessL(testComp2, nameFile2, listOfList, langD2);
-			
-			//System.out.println("ici " + listOfList.get(0).get(1).get(1));
+
+			// System.out.println("ici " + listOfList.get(0).get(1).get(1));
 
 			// on compare les éléments contenus dans la liste de liste
 			Comparateur testComp = new Comparateur(listOfList);
@@ -259,7 +283,7 @@ public class ComputeMax {
 		for (String text : list) {
 			// récupération de la liste de terme
 			List<List<String>> listBabelId = ListUtil.separateTextInLists(text);
-			
+
 			List<String> nameFile = new ArrayList<String>();
 			nameFile.add(nameList.get(i).substring(0,
 					nameList.get(i).length() - 4)

@@ -9,6 +9,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -47,6 +48,20 @@ public class ComputeSim {
 				"Type de vecteur à utiliser : TF ou TFIDF");
 		String vectorTypeS = "TFIDF";
 
+		// Utilisation de listes d'id
+		Boolean list = null;
+		Option L = new Option("L", false,
+				"Utilisation d'une liste d'ID pour un terme");
+
+		Option noL = new Option("noL", false,
+				"Utilisation d'un seul ID pour un terme");
+
+		OptionGroup group = new OptionGroup();
+		group.setRequired(true);
+
+		group.addOption(L);
+		group.addOption(noL);
+
 		// Mesure à utiliser
 		// Cos pour Cosine
 		// Jacc pour Jaccard
@@ -57,6 +72,7 @@ public class ComputeSim {
 		option.addOption(d2);
 		option.addOption(vectorType);
 		option.addOption(mesure);
+		option.addOptionGroup(group);
 
 		if (args.length == 0) {
 			throw new RuntimeException(
@@ -70,6 +86,7 @@ public class ComputeSim {
 
 				d1S = cmd.getOptionValue("d1");
 				d2S = cmd.getOptionValue("d2");
+				list = cmd.hasOption("L");
 				if (cmd.hasOption("vectorType")) {
 					vectorTypeS = cmd.getOptionValue("vectorType");
 				}
@@ -84,11 +101,15 @@ public class ComputeSim {
 				formatter.printHelp("ComputeSim", option);
 			}
 		}
-		// Utilisation d'un seul id babelnet
-		// compute(d1S, d2S, vectorTypeS, mesureS);
-
-		// Utilisation d'un ensemble d'id babelnet
-		computeL(d1S, d2S, vectorTypeS, mesureS);
+		if (!list) {
+			// Utilisation d'un seul id babelnet
+			System.out.println("utilisation de compute");
+			compute(d1S, d2S, vectorTypeS, mesureS);
+		} else {
+			// Utilisation d'un ensemble d'id babelnet
+			System.out.println("utilisation de computeL");
+			computeL(d1S, d2S, vectorTypeS, mesureS);
+		}
 	}
 
 	/**
@@ -121,6 +142,8 @@ public class ComputeSim {
 		// Jacc pour Jaccard
 		String mesureS = mesure;
 
+		String name = "matrice" + vectorType + ".csv";
+
 		// Collection qui contiendra l'ensemble des documents
 		DocumentCollection docCollection = new DocumentCollection();
 		System.out.println("les termes sont " + docCollection.getTerms());
@@ -146,7 +169,7 @@ public class ComputeSim {
 		int i = 0;
 		// on récupère les noms des doc1 du dossier 1 et on les écrit dans le
 		// fichier csv
-		FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
+		FileUtil.writeText(d1S + "/" + name, toWrite, true);
 		for (double[] vector1 : listVect1) {
 			toWrite = "";
 			for (double[] vector2 : listVect2) {
@@ -166,10 +189,10 @@ public class ComputeSim {
 				// toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
 			}
 			// on écrit le nom du document courant du dossier
-			FileUtil.writeText(d1S + "/matrice.csv", ";" + nameDoc2.get(i)
-					+ "; ", true);
+			FileUtil.writeText(d1S + "/" + name, "\n" + nameDoc2.get(i) + "; ",
+					true);
 			// on écrit la ligne de matrice
-			FileUtil.writeText(d1S + "/matrice.csv", toWrite + ";", true);
+			FileUtil.writeText(d1S + "/" + name, toWrite, true);
 			i++;
 
 		}
@@ -205,6 +228,8 @@ public class ComputeSim {
 		// Jacc pour Jaccard
 		String mesureS = mesure;
 
+		String name = "matrice" + vectorType + ".csv";
+
 		// Collection qui contiendra l'ensemble des documents
 		DocumentCollection docCollection = new DocumentCollection();
 		System.out.println("les termes sont " + docCollection.getTerms());
@@ -234,7 +259,7 @@ public class ComputeSim {
 		int i = 0;
 		// on récupère les noms des doc1 du dossier 1 et on les écrit dans le
 		// fichier csv
-		FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
+		FileUtil.writeText(d1S + "/" + name, toWrite, true);
 		for (double[] vector1 : listVect1) {
 			toWrite = "";
 			for (double[] vector2 : listVect2) {
@@ -254,10 +279,10 @@ public class ComputeSim {
 				// toWrite = toWrite + sim.getSim(vector1, vector2) + ";\t";
 			}
 			// on écrit le nom du document courant du dossier
-			FileUtil.writeText(d1S + "/matrice.csv", "\n" + nameDoc2.get(i)
-					+ ";", true);
+			FileUtil.writeText(d1S + "/" + name, "\n" + nameDoc2.get(i) + ";",
+					true);
 			// on écrit la ligne de matrice
-			FileUtil.writeText(d1S + "/matrice.csv", toWrite, true);
+			FileUtil.writeText(d1S + "/" + name, toWrite, true);
 			i++;
 
 		}
@@ -405,7 +430,7 @@ public class ComputeSim {
 	 * @return
 	 */
 	public static String getName(String dir) {
-		String nameDoc = "";// facilite l'exportation sous excel
+		String nameDoc = ";";// facilite l'exportation sous excel
 		List<String> temp = FileUtil.getListNameFile(dir);
 		// on trie la liste
 		Collections.sort(temp);
