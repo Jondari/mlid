@@ -169,11 +169,6 @@ public class ComputeMax {
 			// on compare les éléments contenus dans la liste de liste
 			Comparateur testComp = new Comparateur(listOfList);
 			testComp.setPathReport(pathReport);
-			testComp.compareOrderedDescU();
-			System.out
-					.println("*****************************************************************");
-			testComp.setPathReport(pathReport.substring(0,
-					pathReport.length() - 4) + "2.txt");
 			testComp.compareDiffLangU(langD1, langD2);
 
 		}

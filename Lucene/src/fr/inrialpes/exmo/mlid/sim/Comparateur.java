@@ -41,7 +41,8 @@ public class Comparateur {
 	 *            liste des listes à comparer
 	 */
 	public Comparateur(List<List<String>> list) {
-		listOfList = list;
+		listOfList = ListUtil.removeDuplicate(list);
+		getNbTermText();
 	}
 
 	/**
@@ -399,7 +400,11 @@ public class Comparateur {
 							.equalsIgnoreCase(lang2) && !name2.substring(
 							name2.length() - 3, name2.length() - 1)
 							.equalsIgnoreCase(lang2))) {
-				reportNbCommonTerm(name1, name2, value, pathReport);
+				int nbTermText1 = nbTermText.get(name1);
+				int nbTermText2 = nbTermText.get(name2);
+				String phrase = name1 + " " + name2 + " " + value + " "
+						+ nbTermText1 + " " + nbTermText2;
+				FileUtil.writeText(pathReport, phrase + "\r", true);
 			}
 		}
 
@@ -484,7 +489,7 @@ public class Comparateur {
 							}
 						}
 						// s'ils n'ont pas de terme en communs
-						/*else {
+						else {
 							if (!couplesName.exist(name1, name2)) {
 								Couple<String> crtCpl = new Couple<String>(
 										name1, name2);
@@ -492,7 +497,7 @@ public class Comparateur {
 								nbTerm = 0;
 								map.put(key, nbTerm);
 							}
-						}*/
+						}
 						
 						}
 					}
