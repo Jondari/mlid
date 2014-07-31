@@ -21,14 +21,24 @@ public class Comparateur {
 	private String pathReport = "./src/rapport/rapport.txt";
 
 	/**
-	 * Liste contenant les vecteurs correspondant au texte
+	 * Liste contenant les vecteurs correspondant au texte du dossier 1
 	 */
-	public List<List<String>> listOfList = null;
+	public List<List<String>> listOfListD1 = null;
 
 	/**
-	 * Liste contenant les vecteurs correspondant au texte
+	 * Liste contenant les vecteurs correspondant au texte du dossier 
 	 */
-	public List<List<List<String>>> listOfList2 = null;
+	public List<List<String>> listOfListD2 = null;
+	
+	/**
+	 * Liste contenant les vecteurs correspondant au texte du dossier 1
+	 */
+	public List<List<List<String>>> listOfListD1_2 = null;
+	
+	/**
+	 * Liste contenant les vecteurs correspondant au texte du dossier 2
+	 */
+	public List<List<List<String>>> listOfListD2_2 = null;
 
 	public Comparateur() {
 	}
@@ -40,20 +50,23 @@ public class Comparateur {
 	 * @param list
 	 *            liste des listes à comparer
 	 */
-	public Comparateur(List<List<String>> list) {
-		listOfList = ListUtil.removeDuplicate(list);
+	public Comparateur(List<List<String>> listD1, List<List<String>> listD2) {
+		listOfListD1 = ListUtil.removeDuplicate(listD1);
+		listOfListD2 = ListUtil.removeDuplicate(listD2);
 		getNbTermText();
 	}
 
 	/**
 	 * 
+	 * @param listOfListD2 
 	 * @param list
 	 *            liste des listes à comparer
 	 */
-	public Comparateur(ArrayList<List<List<String>>> listOfList) {
+	public Comparateur(ArrayList<List<List<String>>> listOfListD1, ArrayList<List<List<String>>> listOfListD2) {
 
-		listOfList2 = ListUtil.removeDuplicateList(listOfList);
-		getNbTermText();
+		listOfListD1_2 = ListUtil.removeDuplicateList(listOfListD1);
+		listOfListD2_2 = ListUtil.removeDuplicateList(listOfListD2);
+		getNbTermTextL();
 	}
 
 	/**
@@ -168,7 +181,7 @@ public class Comparateur {
 			List<String> commonTerms, String reportPath) {
 		String phrase = "Les fichiers " + nameList1 + " et " + nameList2
 				+ " ont en commun les termes : ";
-		System.out.println(phrase);
+		// System.out.println(phrase);
 		FileUtil.writeText(reportPath, phrase + "\r", true);
 		for (String term : commonTerms) {
 			FileUtil.writeText(reportPath, term + "\r", true);
@@ -199,9 +212,9 @@ public class Comparateur {
 		String name1Max = "none";
 		String name2Max = "none";
 		int max = -1;
-		for (List<String> list1 : listOfList) {
-			for (List<String> list2 : listOfList) {
-				if (!list1.equals(list2)) {
+		for (List<String> list1 : listOfListD1) {
+			for (List<String> list2 : listOfListD2) {
+				//if (!list1.equals(list2)) {
 					String name1 = list1.get(0);
 					String name2 = list2.get(0);
 					int nbTerm = getNbCommonTerm(list1, list2);
@@ -211,7 +224,7 @@ public class Comparateur {
 						name1Max = name1;
 						name2Max = name2;
 					}
-				}
+				//}
 			}
 		}
 		System.out.println("Les fichiers " + name1Max + " et " + name2Max
@@ -226,16 +239,16 @@ public class Comparateur {
 	public void compareOrderedDesc() {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
-		for (List<String> list1 : listOfList) {
-			for (List<String> list2 : listOfList) {
-				if (!list1.equals(list2)) {
+		for (List<String> list1 : listOfListD1) {
+			for (List<String> list2 : listOfListD2) {
+				//if (!list1.equals(list2)) {
 					String name1 = list1.get(0);
 					String name2 = list2.get(0);
 					String key = name1 + "/" + name2;
 					int nbTerm = getNbCommonTerm(list1, list2);
 
 					map.put(key, nbTerm);
-				}
+				//}
 			}
 		}
 
@@ -264,9 +277,9 @@ public class Comparateur {
 		// création d'un ensemble pouvant contenir des listes
 		Couples<String> couplesName = new Couples<String>();
 
-		for (List<String> list1 : listOfList) {
-			for (List<String> list2 : listOfList) {
-				if (!list1.equals(list2)) {
+		for (List<String> list1 : listOfListD1) {
+			for (List<String> list2 : listOfListD2) {
+				//if (!list1.equals(list2)) {
 					String name1 = list1.get(0);
 					String name2 = list2.get(0);
 					String key = name1 + "/" + name2;
@@ -280,7 +293,7 @@ public class Comparateur {
 						couplesName.add(crtCpl);
 						map.put(key, nbTerm);
 					}
-				}
+				//}
 			}
 		}
 
@@ -309,16 +322,16 @@ public class Comparateur {
 	public void compareDiffLang(String lang1, String lang2) {
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
-		for (List<String> list1 : listOfList) {
-			for (List<String> list2 : listOfList) {
-				if (!list1.equals(list2)) {
+		for (List<String> list1 : listOfListD1) {
+			for (List<String> list2 : listOfListD2) {
+				//if (!list1.equals(list2)) {
 					String name1 = list1.get(0);
 					String name2 = list2.get(0);
 					String key = name1 + "/" + name2;
 					int nbTerm = getNbCommonTerm(list1, list2);
 
 					map.put(key, nbTerm);
-				}
+				//}
 			}
 		}
 
@@ -357,9 +370,9 @@ public class Comparateur {
 
 		Couples<String> couplesName = new Couples<String>();
 
-		for (List<String> list1 : listOfList) {
-			for (List<String> list2 : listOfList) {
-				if (!list1.equals(list2)) {
+		for (List<String> list1 : listOfListD1) {
+			for (List<String> list2 : listOfListD2) {
+				//if (!list1.equals(list2)) {
 					String name1 = list1.get(0);
 					String name2 = list2.get(0);
 					String key = name1 + "/" + name2;
@@ -373,7 +386,7 @@ public class Comparateur {
 						map.put(key, nbTerm);
 						mapCommonTerms.put(commonTerms, nbTerm);
 					}
-				}
+				//}
 			}
 		}
 
@@ -433,12 +446,15 @@ public class Comparateur {
 							name2.length() - 3, name2.length() - 1)
 							.equalsIgnoreCase(lang2))) {
 
-				reportCommonTerms(name1, name2, key2,
-						pathReport.substring(0, pathReport.length() - 4)
-								+ "2.txt");
-				FileUtil.writeText(
-						pathReport.substring(0, pathReport.length() - 4)
-								+ "2.txt", "\r", true);
+				//s'il y a des termes en commun on génère le rapport correspondant
+				if (key2.size() > 0) {
+					reportCommonTerms(name1, name2, key2,
+							pathReport.substring(0, pathReport.length() - 4)
+									+ "2.txt");
+					FileUtil.writeText(
+							pathReport.substring(0, pathReport.length() - 4)
+									+ "2.txt", "\r", true);
+				}
 			}
 		}
 	}
@@ -457,50 +473,52 @@ public class Comparateur {
 			Couples<String> couplesName = new Couples<String>();
 			int nbTerm = 0;
 
-			for (List<List<String>> list1 : listOfList2) {
-				for (List<List<String>> list2 : listOfList2) {
-					if (!list1.equals(list2)) {
+			for (List<List<String>> list1 : listOfListD1_2) {
+				for (List<List<String>> list2 : listOfListD2_2) {
+					//if (!list1.equals(list2)) {
 						String name1 = list1.get(0).get(0);
 						String name2 = list2.get(0).get(0);
 						String key = name1 + "/" + name2;
-						
-						// si les fichiers sont de langues différentes on cherche leur terme en commun */
-						if ((name1.substring(name1.length() - 3, name1.length() - 1)
-								.equalsIgnoreCase(lang1) && !name2.substring(
-								name2.length() - 3, name2.length() - 1)
-								.equalsIgnoreCase(lang1))
+
+						// si les fichiers sont de langues différentes on
+						// cherche leur terme en commun 
+						if ((name1.substring(name1.length() - 3,
+								name1.length() - 1).equalsIgnoreCase(lang1) && !name2
+								.substring(name2.length() - 3,
+										name2.length() - 1).equalsIgnoreCase(
+										lang1))
 								|| (name1.substring(name1.length() - 3,
-										name1.length() - 1).equalsIgnoreCase(lang2) && !name2
-										.substring(name2.length() - 3,
-												name2.length() - 1).equalsIgnoreCase(
-												lang2))) {
+										name1.length() - 1).equalsIgnoreCase(
+										lang2) && !name2.substring(
+										name2.length() - 3, name2.length() - 1)
+										.equalsIgnoreCase(lang2))) {
 
-						if (haveCommonTerm(list1, list2)) {
+							if (haveCommonTerm(list1, list2)) {
 
-							if (!couplesName.exist(name1, name2)) {
-								Couple<String> crtCpl = new Couple<String>(
-										name1, name2);
-								couplesName.add(crtCpl);
-								List<List<String>> commonTerms = getListCommonTerms(
-										list1, list2);
-								nbTerm = commonTerms.size();
-								map.put(key, nbTerm);
-								mapCommonTerms.put(commonTerms, nbTerm);
+								if (!couplesName.exist(name1, name2)) {
+									Couple<String> crtCpl = new Couple<String>(
+											name1, name2);
+									couplesName.add(crtCpl);
+									List<List<String>> commonTerms = getListCommonTerms(
+											list1, list2);
+									nbTerm = commonTerms.size();
+									map.put(key, nbTerm);
+									mapCommonTerms.put(commonTerms, nbTerm);
+								}
 							}
-						}
-						// s'ils n'ont pas de terme en communs
-						else {
-							if (!couplesName.exist(name1, name2)) {
-								Couple<String> crtCpl = new Couple<String>(
-										name1, name2);
-								couplesName.add(crtCpl);		
-								nbTerm = 0;
-								map.put(key, nbTerm);
+							// s'ils n'ont pas de terme en communs
+							else {
+								if (!couplesName.exist(name1, name2)) {
+									Couple<String> crtCpl = new Couple<String>(
+											name1, name2);
+									couplesName.add(crtCpl);
+									nbTerm = 0;
+									map.put(key, nbTerm);
+								}
 							}
+
 						}
-						
-						}
-					}
+					//}
 				}
 			}
 
@@ -546,9 +564,10 @@ public class Comparateur {
 				FileUtil.writeText(
 						pathReport.substring(0, pathReport.length() - 4)
 								+ "2.txt", phrase + "\r", true);
+				
+				//s'il n'ont pas de terme en commun le rapport n'est pas généré
 				for (List<String> listTerms : key2) {
-					reportCommonTerms(
-							listTerms,
+					reportCommonTerms(listTerms,
 							pathReport.substring(0, pathReport.length() - 4)
 									+ "2.txt");
 					FileUtil.writeText(
@@ -564,9 +583,28 @@ public class Comparateur {
 	 * Méthode qui remplie l'attribut nbTermText avec le nom de fichier et le
 	 * nombre de terme que ce dernier possède
 	 */
-	private void getNbTermText() {
-		for (List<List<String>> crtText : listOfList2) {
+	private void getNbTermTextL() {
+		for (List<List<String>> crtText : listOfListD1_2) {
 			nbTermText.put(crtText.get(0).get(0), crtText.size());
+			// System.out.println(crtText.get(0).get(0) + " " + crtText.size());
+		}
+		for (List<List<String>> crtText : listOfListD2_2) {
+			nbTermText.put(crtText.get(0).get(0), crtText.size());
+			// System.out.println(crtText.get(0).get(0) + " " + crtText.size());
+		}
+	}
+
+	/**
+	 * Méthode qui remplie l'attribut nbTermText avec le nom de fichier et le
+	 * nombre de terme que ce dernier possède
+	 */
+	private void getNbTermText() {
+		for (List<String> crtText : listOfListD1) {
+			nbTermText.put(crtText.get(0), crtText.size());
+			// System.out.println(crtText.get(0).get(0) + " " + crtText.size());
+		}
+		for (List<String> crtText : listOfListD2) {
+			nbTermText.put(crtText.get(0), crtText.size());
 			// System.out.println(crtText.get(0).get(0) + " " + crtText.size());
 		}
 	}

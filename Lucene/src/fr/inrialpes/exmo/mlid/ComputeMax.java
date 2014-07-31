@@ -155,19 +155,21 @@ public class ComputeMax {
 			throw new RuntimeException(
 					"Vos dossiers doivent contenir au moins un fichier! La comparaison n'aura pas lieu.");
 		} else {
-			List<List<String>> listOfList = new ArrayList<List<String>>();
+			List<List<String>> listOfListD1 = new ArrayList<List<String>>();
+			
+			List<List<String>> listOfListD2 = new ArrayList<List<String>>();
 
 			// On récupère les noms de fichier du dossier 1
 			List<String> nameFile1 = FileUtil.getListNameFile(d1);
 			// idem pour le dossier 2
 			List<String> nameFile2 = FileUtil.getListNameFile(d2);
 
-			computeProcess(testComp1, nameFile1, listOfList, langD1);
+			computeProcess(testComp1, nameFile1, listOfListD1, langD1);
 
-			computeProcess(testComp2, nameFile2, listOfList, langD2);
+			computeProcess(testComp2, nameFile2, listOfListD2, langD2);
 
 			// on compare les éléments contenus dans la liste de liste
-			Comparateur testComp = new Comparateur(listOfList);
+			Comparateur testComp = new Comparateur(listOfListD1,listOfListD2);
 			testComp.setPathReport(pathReport);
 			testComp.compareDiffLangU(langD1, langD2);
 
@@ -238,21 +240,23 @@ public class ComputeMax {
 			throw new RuntimeException(
 					"Vos dossiers doivent contenir au moins un fichier! La comparaison n'aura pas lieu.");
 		} else {
-			ArrayList<List<List<String>>> listOfList = new ArrayList<List<List<String>>>();
+			ArrayList<List<List<String>>> listOfListD1 = new ArrayList<List<List<String>>>();
+			
+			ArrayList<List<List<String>>> listOfListD2 = new ArrayList<List<List<String>>>();
 
 			// On récupère les noms de fichier du dossier 1
 			List<String> nameFile1 = FileUtil.getListNameFile(d1);
 			// idem pour le dossier 2
 			List<String> nameFile2 = FileUtil.getListNameFile(d2);
 
-			computeProcessL(testComp1, nameFile1, listOfList, langD1);
+			computeProcessL(testComp1, nameFile1, listOfListD1, langD1);
 
-			computeProcessL(testComp2, nameFile2, listOfList, langD2);
+			computeProcessL(testComp2, nameFile2, listOfListD2, langD2);
 
 			// System.out.println("ici " + listOfList.get(0).get(1).get(1));
 
 			// on compare les éléments contenus dans la liste de liste
-			Comparateur testComp = new Comparateur(listOfList);
+			Comparateur testComp = new Comparateur(listOfListD1,listOfListD2);
 			testComp.setPathReport(pathReport);
 			testComp.compareDiffLangU(langD1, langD2, true);
 		}
